@@ -11,9 +11,9 @@ public class Trip {
 
     @Id
     private String id;
-    @Column("start_date")
+    @Column(name = "start_date")
     private Date startDate;
-    @Column("end_date")
+    @Column(name = "end_date")
     private Date endDate;
     @Column(name = "departure_point")
     private String departurePoint;
