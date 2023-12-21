@@ -11,4 +11,9 @@ public class AgencyController {
     public AgencyController(AgenciesService agenciesService) {
         this.agenciesService = agenciesService;
     }
+
+    // /api/agencies
+    // GET /: get all the agencies
+    // GET /agencies/{agency}Id/trips: get all trips of an agency
+
 }
