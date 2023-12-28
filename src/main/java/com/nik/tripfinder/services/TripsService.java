@@ -40,4 +40,5 @@ public class TripsService {
     public List<String> getAllDeparturePoints() {
         return tripsRepository.findAllDeparturePoints();
     }
+    
 }
