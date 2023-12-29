@@ -1,15 +1,16 @@
 package com.nik.tripfinder.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="customers")
 public class Customer {
 
     @Id
+    @OneToOne
+    @JoinColumn(name = "id")
+    private User user;
+
     @Column(name = "tax_code")
     private String taxCode;
     private String username;
@@ -17,6 +18,16 @@ public class Customer {
     private String surname;
     private String email;
     private String password;
+
+    public Customer(User user, String taxCode, String username, String name, String surname, String email, String password) {
+        this.user = user;
+        this.taxCode = taxCode;
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+    }
 
     public Customer(String taxCode, String username, String name, String surname, String email, String password) {
         this.taxCode = taxCode;
