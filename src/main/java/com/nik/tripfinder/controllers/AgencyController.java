@@ -1,7 +1,8 @@
 package com.nik.tripfinder.controllers;
 
-import com.nik.tripfinder.services.AgenciesService;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nik.tripfinder.services.AgenciesService;
 
 @RestController
 public class AgencyController {
@@ -14,6 +15,7 @@ public class AgencyController {
 
     // /api/agencies
     // GET /: get all the agencies
-    // GET /agencies/{agency}Id/trips: get all trips of an agency
+    // GET /{agencyId}/trips: get all trips of an agency
+
 
 }

@@ -10,7 +10,8 @@ import java.util.Date;
 public class Trip {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "start_date")
     private Date startDate;
     @Column(name = "end_date")
@@ -20,20 +21,20 @@ public class Trip {
     private String destination;
     @Column(name = "trip_schedule")
     private String tripSchedule;
-    @ManyToOne
-    @JoinColumn(name = "tax_code")
-    private Agency agency;
     @Column(name = "max_participatns")
     private Integer maxParticipants;
+    // @ManyToOne
+    // @JoinColumn(name = "tax_code")
+    // private Agency agency;
 
-    public Trip(String id, Date startDate, Date endDate, String departurePoint, String destination, String tripSchedule, Agency agency, Integer maxParticipants) {
+    public Trip(Long id, Date startDate, Date endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.departurePoint = departurePoint;
         this.destination = destination;
         this.tripSchedule = tripSchedule;
-        this.agency = agency;
+        // this.agency = agency;
         this.maxParticipants = maxParticipants;
     }
 
@@ -41,7 +42,7 @@ public class Trip {
 
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -65,9 +66,9 @@ public class Trip {
         return tripSchedule;
     }
 
-    public Agency getAgency() {
-        return agency;
-    }
+    // public Agency getAgency() {
+    //     return agency;
+    // }
 
     public Integer getMaxParticipants() {
         return maxParticipants;
