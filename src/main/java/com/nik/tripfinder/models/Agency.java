@@ -5,45 +5,41 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "agencies")
 public class Agency {
+
     @Id
-    @OneToOne
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @MapsId
     @JoinColumn(name = "id")
     private User user;
-    @Column(name = "tax_code")
+    @Column(name = "tax_code", unique = true)
     private String taxCode;
-    private String username;
-    @Column(name = "brand_name")
+    @Column(name = "brand_name", unique = true)
     private String brandName;
     private String owner;
-    private String password;
 
-    public Agency(User user, String taxCode, String username, String brandName, String owner, String password) {
+    public Agency(User user, String taxCode, String brandName, String owner) {
         this.user = user;
         this.taxCode = taxCode;
-        this.username = username;
         this.brandName = brandName;
         this.owner = owner;
-        this.password = password;
     }
 
-    public Agency(String taxCode, String username, String brandName, String owner, String password) {
+    public Agency(String taxCode, String brandName, String owner) {
         this.taxCode = taxCode;
-        this.username = username;
         this.brandName = brandName;
         this.owner = owner;
-        this.password = password;
     }
 
     public Agency() {
     }
 
 
+    public User getUser() {return this.user;}
     public String getTaxCode() {
         return this.taxCode;
-    }
-
-    public String getUsername() {
-        return this.username;
     }
 
     public String getBrandName() {
@@ -52,9 +48,5 @@ public class Agency {
 
     public String getOwner() {
         return this.owner;
-    }
-
-    public String getPassword() {
-        return this.password;
     }
 }
