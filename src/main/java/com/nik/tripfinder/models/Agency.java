@@ -1,5 +1,10 @@
 package com.nik.tripfinder.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +30,11 @@ public class Agency {
     public Agency() {
     }
 
+    @JsonIgnore
+    @OneToMany(mappedBy="agency", 
+		       cascade= CascadeType.ALL,
+		       fetch = FetchType.LAZY)
+	private List<Trip> trips = new ArrayList<Trip>();
 
     public String getTaxCode() {
         return this.taxCode;
@@ -45,4 +55,6 @@ public class Agency {
     public String getPassword() {
         return this.password;
     }
+    
+    public List<Trip> getTrips() {return this.trips;}
 }
