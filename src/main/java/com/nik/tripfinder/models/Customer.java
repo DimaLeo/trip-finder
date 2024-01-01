@@ -1,42 +1,53 @@
 package com.nik.tripfinder.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="customers")
 public class Customer {
 
     @Id
-    @Column(name = "tax_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @MapsId
+    @JoinColumn(name = "id")
+    private User user;
+
+    @Column(name = "tax_code", unique = true)
     private String taxCode;
-    private String username;
     private String name;
     private String surname;
-    private String email;
-    private String password;
 
-    public Customer(String taxCode, String username, String name, String surname, String email, String password) {
-        this.taxCode = taxCode;
-        this.username = username;
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.password = password;
-    }
+    @Column(name = "email", unique = true)
+    private String email;
 
     public Customer() {
 
     }
 
-    public String getTaxCode() {
-        return taxCode;
+    public Customer(User user, String taxCode, String name, String surname, String email) {
+        this.user = user;
+        this.taxCode = taxCode;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
     }
 
-    public String getUsername() {
-        return username;
+    public Customer(String taxCode, String name, String surname, String email) {
+        this.taxCode = taxCode;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getTaxCode() {
+        return taxCode;
     }
 
     public String getName() {
@@ -49,9 +60,5 @@ public class Customer {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }
