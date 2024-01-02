@@ -8,6 +8,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "username", unique = true)
     private String username;
     private String password;
     @Column(name = "user_type")
