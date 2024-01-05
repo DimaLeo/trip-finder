@@ -13,21 +13,21 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "start_date")
-    private Date startDate;
+    private Long startDate;
     @Column(name = "end_date")
-    private Date endDate;
+    private Long endDate;
     @Column(name = "departure_point")
     private String departurePoint;
     private String destination;
     @Column(name = "trip_schedule")
     private String tripSchedule;
-    @Column(name = "max_participatns")
+    @Column(name = "max_participants")
     private Integer maxParticipants;
     // @ManyToOne
     // @JoinColumn(name = "tax_code")
     // private Agency agency;
 
-    public Trip(Long id, Date startDate, Date endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -46,11 +46,11 @@ public class Trip {
         return id;
     }
 
-    public Date getStartDate() {
+    public Long getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public Long getEndDate() {
         return endDate;
     }
 
