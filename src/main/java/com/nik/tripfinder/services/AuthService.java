@@ -16,6 +16,7 @@ import com.nik.tripfinder.repositories.UserRepository;
 import com.nik.tripfinder.util.Validator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -349,6 +350,17 @@ public class AuthService {
                     body.getTaxCode(),
                     body.getBrandName(),
                     body.getOwner());
+
+            try{
+                agenciesRepository.save(newAgency);
+            }
+            catch (Exception e){
+                return new AgencyResponse(
+                        "FAILED",
+                        "Failed to insert agency to the db.\n" +
+                                "message : "+ e.getMessage()
+                );
+            }
 
             agenciesRepository.save(newAgency);
 

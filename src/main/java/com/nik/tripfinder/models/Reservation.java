@@ -7,13 +7,35 @@ import jakarta.persistence.*;
 public class Reservation {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer reservationId;
 
-    @OneToOne
-    @JoinColumn(name = "customer_tax_code")
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "trip_id")
     private Trip trip;
+
+    public Reservation(){
+
+    }
+
+    public Reservation(Customer customer, Trip trip) {
+        this.customer = customer;
+        this.trip = trip;
+    }
+
+    public Integer getReservationId() {
+        return reservationId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
 }

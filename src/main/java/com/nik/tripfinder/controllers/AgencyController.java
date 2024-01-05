@@ -1,5 +1,6 @@
 package com.nik.tripfinder.controllers;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nik.tripfinder.services.AgenciesService;

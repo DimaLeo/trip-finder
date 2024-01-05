@@ -13,8 +13,17 @@ public class NewAgencyRequest {
     private String brandName;
     private String owner;
 
-    private NewAgencyRequest() {
+    public NewAgencyRequest() {
 
+    }
+
+    public NewAgencyRequest(String username, String password, String userType, String taxCode, String brandName, String owner) {
+        this.username = username;
+        this.password = password;
+        this.userType = userType;
+        this.taxCode = taxCode;
+        this.brandName = brandName;
+        this.owner = owner;
     }
 
     public String getUsername() {

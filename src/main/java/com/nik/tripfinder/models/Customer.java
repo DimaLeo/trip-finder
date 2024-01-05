@@ -42,6 +42,20 @@ public class Customer {
         this.email = email;
     }
 
+    public Customer(Integer id, User user, String taxCode, String name, String surname, String email) {
+        this.id = id;
+        this.user = user;
+        this.taxCode = taxCode;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
+
+
+    public Integer getId() {
+        return id;
+    }
+
     public User getUser() {
         return user;
     }
