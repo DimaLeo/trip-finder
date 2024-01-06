@@ -32,8 +32,7 @@ public class Agency {
 
     @JsonIgnore
     @OneToMany(mappedBy="agency", 
-		       cascade= CascadeType.ALL,
-		       fetch = FetchType.LAZY)
+		       cascade= CascadeType.ALL)
 	private List<Trip> trips = new ArrayList<Trip>();
 
     public String getTaxCode() {

@@ -7,5 +7,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AgenciesRepository extends JpaRepository<Agency, String> {
-	Optional<Agency> findByTaxCode(String agency);
+	Optional<Agency> findAgencyByTaxCode(String agency);
 }

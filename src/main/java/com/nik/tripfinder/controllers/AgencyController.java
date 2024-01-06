@@ -2,10 +2,10 @@ package com.nik.tripfinder.controllers;
 
 
 import com.nik.tripfinder.models.Agency;
-import com.nik.tripfinder.models.Trip;
+import com.nik.tripfinder.payloads.responses.AllAgenciesResponse;
+import com.nik.tripfinder.payloads.responses.TripsOfAnAgencyResponse;
 import com.nik.tripfinder.services.AgenciesService;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,7 @@ public class AgencyController {
     
 	
 	@GetMapping(path="/agencies")
-	public List<String> getAllAgencies()  throws Exception{
+	public AllAgenciesResponse getAllAgencies()  throws Exception{
 		return agenciesService.getAllAgencies();
 	} 
 	
@@ -37,7 +37,7 @@ public class AgencyController {
 	}
 	
 	@GetMapping(path="/{agency}/trips")
-	public List<Trip> findTrips(@PathVariable String agency) throws Exception {
+	public TripsOfAnAgencyResponse findTrips(@PathVariable String agency) throws Exception {
 		return agenciesService.findTrips(agency);
 		
 	}
