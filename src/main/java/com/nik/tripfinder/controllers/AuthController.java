@@ -21,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/agency-registration")
-    public ResponseEntity<AgencyResponse> registerAgency(@RequestBody NewAgencyRequest newAgencyRequest){
+    public ResponseEntity<AgencyResponse> registerAgency(@RequestBody NewAgencyRequest newAgencyRequest) {
 
         AgencyResponse agencyResponse = authService.registerAgency(newAgencyRequest);
 
@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/customer-registration")
-    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody NewCustomerRequest newCustomerRequest){
+    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody NewCustomerRequest newCustomerRequest) {
 
         CustomerResponse newCustomerResponse = authService.registerCustomer(newCustomerRequest);
 
@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/agency-authentication")
-    public ResponseEntity<AgencyResponse> authenticateAgency(@RequestBody AuthenticationRequest body){
+    public ResponseEntity<AgencyResponse> authenticateAgency(@RequestBody AuthenticationRequest body) {
 
         AgencyResponse authenticatedAgency = authService.authenticateAgency(body);
 
@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @PostMapping("/customer-authentication")
-    public ResponseEntity<CustomerResponse> authenticateCustomer(@RequestBody AuthenticationRequest body){
+    public ResponseEntity<CustomerResponse> authenticateCustomer(@RequestBody AuthenticationRequest body) {
 
         CustomerResponse authenticatedCustomer = authService.authenticateCustomer(body);
 
