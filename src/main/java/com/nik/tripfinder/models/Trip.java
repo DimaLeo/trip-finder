@@ -26,7 +26,7 @@ public class Trip {
     // @JoinColumn(name = "tax_code")
     // private Agency agency;
 
-    public Trip(Long id, Long startDate, Long endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;

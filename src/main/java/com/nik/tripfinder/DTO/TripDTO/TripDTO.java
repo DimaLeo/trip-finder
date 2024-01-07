@@ -8,8 +8,8 @@ public record TripDTO(
         Long startDate,
         @JsonProperty("end_date")
         Long endDate,
-        @JsonProperty("departure_point")
-        String departurePoint,
+        @JsonProperty("departure_area")
+        String departureArea,
         String destination,
         @JsonProperty("trip_schedule")
         String tripSchedule,

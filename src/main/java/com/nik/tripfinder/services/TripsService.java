@@ -21,10 +21,10 @@ public class TripsService {
     }
 
     public List<Trip> findTripsWithOptionalParameters(
-        Long startDate,
-        Long endDate,
-        String destination,
-        String departureArea) {
+            Long startDate,
+            Long endDate,
+            String destination,
+            String departureArea) {
         return tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
     }
 
@@ -39,5 +39,5 @@ public class TripsService {
     public List<String> getAllDepartureAreas() {
         return tripsRepository.findAllDepartureAreas();
     }
-    
+
 }

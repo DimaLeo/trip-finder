@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface TripsRepository extends JpaRepository<Trip, Long> {
 
     @Query("SELECT DISTINCT t.destination FROM Trip t")
-    public List<String> findAllDestinations(); 
+    public List<String> findAllDestinations();
 
     @Query("SELECT DISTINCT t.departureArea FROM Trip t")
     public List<String> findAllDepartureAreas();
@@ -21,9 +21,9 @@ public interface TripsRepository extends JpaRepository<Trip, Long> {
             "AND (:destination IS NULL OR t.destination = :destination) " +
             "AND (:departureArea IS NULL OR t.departureArea = :departureArea)")
     List<Trip> findTripsWithOptionalParameters(
-        @Param("startDate") Long startDate,
-        @Param("endDate") Long endDate,
-        @Param("destination") String destination,
-        @Param("departureArea") String departureArea);
+            @Param("startDate") Long startDate,
+            @Param("endDate") Long endDate,
+            @Param("destination") String destination,
+            @Param("departureArea") String departureArea);
 
 }

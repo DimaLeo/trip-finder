@@ -43,16 +43,16 @@ public class TripsController {
     // departureArea={departureArea} 
     @GetMapping("/")
     public ResponseEntity<List<Trip>> getTrips(
-        @RequestParam(required = false) Long startDate,
-        @RequestParam(required = false) Long endDate,
-        @RequestParam(required = false) String destination,
-        @RequestParam(required = false) String departureArea) {
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate,
+            @RequestParam(required = false) String destination,
+            @RequestParam(required = false) String departureArea) {
 
         List<Trip> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
-    
+
     // GET /{tripId}: get trip info
     @GetMapping("/{id}")
     public ResponseEntity<Trip> getTrip(@PathVariable Long id) {
@@ -61,7 +61,7 @@ public class TripsController {
         if (trip != null) return new ResponseEntity<>(trip, HttpStatus.OK);
         else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
+
     // GET /destinations: get the destinations of all the trips
     @GetMapping("/destinations")
     public ResponseEntity<List<String>> getAllDestinations() {
@@ -75,5 +75,5 @@ public class TripsController {
         List<String> departureAreas = tripsService.getAllDepartureAreas();
         return new ResponseEntity<>(departureAreas, HttpStatus.OK);
     }
-        
+
 }
