@@ -4,6 +4,7 @@ import com.nik.tripfinder.payloads.requests.AuthenticationRequest;
 import com.nik.tripfinder.payloads.requests.NewAgencyRequest;
 import com.nik.tripfinder.payloads.requests.NewCustomerRequest;
 import com.nik.tripfinder.payloads.responses.AgencyResponse;
+import com.nik.tripfinder.payloads.responses.AuthenticationResponse;
 import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.services.AuthService;
 import jakarta.validation.Valid;
@@ -39,21 +40,12 @@ public class AuthController {
 
     }
 
-    @PostMapping("/agency-authentication")
-    public ResponseEntity<AgencyResponse> authenticateAgency(@Valid @RequestBody AuthenticationRequest body){
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticateAgency(@Valid @RequestBody AuthenticationRequest body){
 
-        AgencyResponse authenticatedAgency = authService.authenticateAgency(body);
+        AuthenticationResponse authenticatedUser = authService.authenticate(body);
 
-        return new ResponseEntity<>(authenticatedAgency, HttpStatus.OK);
-
-    }
-
-    @PostMapping("/customer-authentication")
-    public ResponseEntity<CustomerResponse> authenticateCustomer(@RequestBody AuthenticationRequest body){
-
-        CustomerResponse authenticatedCustomer = authService.authenticateCustomer(body);
-
-        return new ResponseEntity<>(authenticatedCustomer, HttpStatus.OK);
+        return new ResponseEntity<>(authenticatedUser, HttpStatus.OK);
 
     }
 }
