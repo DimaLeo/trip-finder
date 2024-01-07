@@ -14,7 +14,7 @@ public class TripDTOMapper implements Function<Trip, TripDTO> {
                 trip.getId(),
                 trip.getStartDate(),
                 trip.getEndDate(),
-                trip.getDeparturePoint(),
+                trip.getDepartureArea(),
                 trip.getDestination(),
                 trip.getTripSchedule(),
                 trip.getMaxParticipants()
