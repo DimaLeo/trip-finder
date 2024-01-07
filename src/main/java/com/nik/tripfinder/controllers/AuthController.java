@@ -6,6 +6,7 @@ import com.nik.tripfinder.payloads.requests.NewCustomerRequest;
 import com.nik.tripfinder.payloads.responses.AgencyResponse;
 import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.services.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/agency-registration")
-    public ResponseEntity<AgencyResponse> registerAgency(@RequestBody NewAgencyRequest newAgencyRequest){
+    public ResponseEntity<AgencyResponse> registerAgency(@Valid @RequestBody NewAgencyRequest newAgencyRequest){
 
         AgencyResponse agencyResponse = authService.registerAgency(newAgencyRequest);
 
@@ -39,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("/agency-authentication")
-    public ResponseEntity<AgencyResponse> authenticateAgency(@RequestBody AuthenticationRequest body){
+    public ResponseEntity<AgencyResponse> authenticateAgency(@Valid @RequestBody AuthenticationRequest body){
 
         AgencyResponse authenticatedAgency = authService.authenticateAgency(body);
 

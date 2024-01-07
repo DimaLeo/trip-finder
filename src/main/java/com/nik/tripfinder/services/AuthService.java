@@ -16,6 +16,7 @@ import com.nik.tripfinder.repositories.UserRepository;
 import com.nik.tripfinder.util.Validator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -323,23 +324,12 @@ public class AuthService {
                     body.getUserType());
 
             try{
-                userRepository.save(newUser);
+                newUser = userRepository.save(newUser);
             }
             catch (Exception e){
                 return new AgencyResponse(
                         "FAILED",
                         "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
-            }
-
-            try{
-                newUser = userRepository.findUserByUsername(newUser.getUsername()).get();
-            }
-            catch (Exception e){
-                return new AgencyResponse(
-                        "FAILED",
-                        "Failed to retrieve newly inserted user.\n" +
                                 "message : "+ e.getMessage()
                 );
             }
@@ -350,8 +340,16 @@ public class AuthService {
                     body.getBrandName(),
                     body.getOwner());
 
-            agenciesRepository.save(newAgency);
-
+            try{
+                newAgency = agenciesRepository.save(newAgency);
+            }
+            catch (Exception e){
+                return new AgencyResponse(
+                        "FAILED",
+                        "Failed to insert agency to the db.\n" +
+                                "message : "+ e.getMessage()
+                );
+            }
 
             return new AgencyResponse(
                     "SUCCESS",
@@ -384,23 +382,12 @@ public class AuthService {
                     body.getUserType());
 
             try{
-                userRepository.save(newUser);
+                newUser = userRepository.save(newUser);
             }
             catch (Exception e){
                 return new CustomerResponse(
                         "FAILED",
                         "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
-            }
-
-            try{
-                newUser = userRepository.findUserByUsername(newUser.getUsername()).get();
-            }
-            catch (Exception e){
-                return new CustomerResponse(
-                        "FAILED",
-                        "Failed to retrieve newly inserted user.\n" +
                                 "message : "+ e.getMessage()
                 );
             }
@@ -412,8 +399,17 @@ public class AuthService {
                     body.getSurname(),
                     body.getEmail());
 
-            customersRepository.save(newCustomer);
+            try{
+                newCustomer = customersRepository.save(newCustomer);
 
+            }
+            catch (Exception e){
+                return new CustomerResponse(
+                        "FAILED",
+                        "Failed to insert customer to the db.\n" +
+                                "message : "+ e.getMessage()
+                );
+            }
 
             return new CustomerResponse(
                     "SUCCESS",

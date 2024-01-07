@@ -14,4 +14,8 @@ public class CustomerResponse extends GenericResponse{
         super(status, message);
         this.body = body;
     }
+
+    public CustomerDTO getBody() {
+        return body;
+    }
 }
