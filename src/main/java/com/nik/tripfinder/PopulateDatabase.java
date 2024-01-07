@@ -1,10 +1,5 @@
 package com.nik.tripfinder;
 
-import java.sql.Date;
-import java.time.LocalDate;
-
-import com.nik.tripfinder.models.User;
-import com.nik.tripfinder.payloads.requests.NewAgencyRequest;
 import com.nik.tripfinder.payloads.requests.NewCustomerRequest;
 import com.nik.tripfinder.services.AuthService;
 import org.springframework.boot.CommandLineRunner;
@@ -27,11 +22,11 @@ public class PopulateDatabase implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        Trip t1 = new Trip(1l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t1 = new Trip(1l, 1705190400000l, 1705017600000l, "Thessaloniki", "Olympus mountain, Litochoro, Katerini", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 45);
         tripsService.save(t1);
-        Trip t2 = new Trip(2l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t2 = new Trip(2l, 1705622400000l, 1705795200000l, "Athens", "Parnassos", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 50);
         tripsService.save(t2);
-        Trip t3 = new Trip(3l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t3 = new Trip(3l, 1705708800000l, 1705795200000l, "Kavala", "Drama, Exochi, Falakro", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 32);
         tripsService.save(t3);
 
         NewCustomerRequest c1 = new NewCustomerRequest(

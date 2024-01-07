@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 // /api/trips
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/trips")
 public class TripsController {
 
@@ -42,15 +40,15 @@ public class TripsController {
     // startDate={startDate}
     // endDate={endDate}
     // destination={destination}
-    // departurePoint={departurePoint} 
+    // departureArea={departureArea} 
     @GetMapping("/")
     public ResponseEntity<List<Trip>> getTrips(
         @RequestParam(required = false) Long startDate,
         @RequestParam(required = false) Long endDate,
         @RequestParam(required = false) String destination,
-        @RequestParam(required = false) String departurePoint) {
+        @RequestParam(required = false) String departureArea) {
 
-        List<Trip> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departurePoint);
+        List<Trip> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
@@ -72,10 +70,10 @@ public class TripsController {
     }
 
     // GET /departure-points: get the departure points of all the trips
-    @GetMapping("/departure-points")
-    public ResponseEntity<List<String>> getAllDeparturePoints() {
-        List<String> departurePoints = tripsService.getAllDeparturePoints();
-        return new ResponseEntity<>(departurePoints, HttpStatus.OK);
+    @GetMapping("/departure-areas")
+    public ResponseEntity<List<String>> getAllDepartureAreas() {
+        List<String> departureAreas = tripsService.getAllDepartureAreas();
+        return new ResponseEntity<>(departureAreas, HttpStatus.OK);
     }
         
 }
