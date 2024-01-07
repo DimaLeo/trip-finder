@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface CustomersRepository extends JpaRepository<Customer,String> {
+public interface CustomersRepository extends JpaRepository<Customer,Integer> {
 
     Optional<Customer> findCustomerByEmailOrTaxCode(String email, String taxCode);
     Optional<Customer> findCustomerById(Integer id);
