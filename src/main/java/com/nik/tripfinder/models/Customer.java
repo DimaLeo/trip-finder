@@ -8,18 +8,16 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer customerId;
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "tax_code", unique = true)
     private String taxCode;
     private String name;
     private String surname;
-
     @Column(name = "email", unique = true)
     private String email;
 
@@ -40,6 +38,28 @@ public class Customer {
         this.name = name;
         this.surname = surname;
         this.email = email;
+    }
+
+    public Customer(Integer customerId, User user, String taxCode, String name, String surname, String email) {
+        this.customerId = customerId;
+        this.user = user;
+        this.taxCode = taxCode;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
+
+    public Customer(Integer customerId, String taxCode, String name, String surname, String email) {
+        this.customerId = customerId;
+        this.taxCode = taxCode;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
+
+
+    public Integer getCustomerId() {
+        return customerId;
     }
 
     public User getUser() {

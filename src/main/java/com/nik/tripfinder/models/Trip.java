@@ -1,5 +1,6 @@
 package com.nik.tripfinder.models;
 
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,8 +14,8 @@ public class Trip {
     private Long startDate;
     @Column(name = "end_date", nullable = false)
     private Long endDate;
-    @Column(name = "departure_point", nullable = false)
-    private String departurePoint;
+    @Column(name = "departure_area", nullable = false)
+    private String departureArea;
     @Column(nullable = false)
     private String destination;
     @Column(name = "trip_schedule", columnDefinition = "MEDIUMTEXT", nullable = false)
@@ -25,12 +26,11 @@ public class Trip {
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
-    public Trip(Long id, Long startDate, Long endDate, String departurePoint, String destination, String tripSchedule,
-            Agency agency, Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.departurePoint = departurePoint;
+        this.departureArea = departureArea;
         this.destination = destination;
         this.tripSchedule = tripSchedule;
         this.agency = agency;
@@ -53,8 +53,8 @@ public class Trip {
         return endDate;
     }
 
-    public String getDeparturePoint() {
-        return departurePoint;
+    public String getDepartureArea() {
+        return departureArea;
     }
 
     public String getDestination() {
@@ -65,9 +65,9 @@ public class Trip {
         return tripSchedule;
     }
 
-    public Agency getAgency() {
-        return agency;
-    }
+    // public Agency getAgency() {
+    //     return agency;
+    // }
 
     public Integer getMaxParticipants() {
         return maxParticipants;
