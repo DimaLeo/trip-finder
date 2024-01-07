@@ -6,12 +6,15 @@ import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewReservationRequest;
 import com.nik.tripfinder.payloads.responses.ReservationsConfirmationResponse;
+import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,10 +32,10 @@ public class ReservationService {
         this.reservationDTOMapper = reservationDTOMapper;
     }
 
-    private Customer retrieveReservationCustomer(String email){
+    private Customer retrieveReservationCustomer(String username){
 
         Optional<Customer> customerOptional =
-                customersRepository.findCustomerByEmail(email);
+                customersRepository.findCustomerByUserUsername(username);
 
         if(customerOptional.isPresent()){
             return customerOptional.get();
@@ -58,7 +61,7 @@ public class ReservationService {
         }
     }
 
-    private Reservation retrieveReservation(Long customerId, Long tripId){
+    private Reservation retrieveReservation(Integer customerId, Long tripId){
 
         Optional<Reservation> reservationOptional =
                 reservationRepository.findReservationByCustomerIdAndTripId(customerId, tripId);
@@ -81,10 +84,11 @@ public class ReservationService {
 
         Customer dbCustomer;
         Trip dbTrip;
+        Reservation dbReservation;
 
         try{
 
-            dbCustomer = retrieveReservationCustomer(body.getEmail());
+            dbCustomer = retrieveReservationCustomer(body.getUsername());
 
             if(dbCustomer == null){
                 return new ReservationsConfirmationResponse(
@@ -120,6 +124,24 @@ public class ReservationService {
             );
         }
 
+        try {
+            dbReservation = retrieveReservation(dbCustomer.getId(), dbTrip.getId());
+        }
+        catch (Exception e) {
+            return new ReservationsConfirmationResponse(
+                    "FAILED",
+                    "Failed to check reservation existence in db\n" +
+                            "message: " + e.getMessage()
+            );
+        }
+
+        if(dbReservation!=null){
+            return new ReservationsConfirmationResponse(
+                    "FAILED",
+                    "Trip already reserved by the user"
+            );
+        }
+
 
         try {
             Long takenSlots = countTripReservations(dbTrip.getId());
@@ -141,13 +163,10 @@ public class ReservationService {
             );
 
         }
-
-
-
         Reservation newReservation = new Reservation(dbCustomer,dbTrip);
 
         try{
-            reservationRepository.save(newReservation);
+            dbReservation = reservationRepository.save(newReservation);
         }
         catch (Exception e) {
             return new ReservationsConfirmationResponse(
@@ -157,16 +176,46 @@ public class ReservationService {
             );
         }
 
-        Reservation dbReservation = retrieveReservation(dbCustomer.getId())
-
-        try {
-            reservationRepository.findReservationByCustomerId()
-        }
 
         return new ReservationsConfirmationResponse(
                 "SUCCESS",
-                "Successfully created reservation"
+                "Successfully created reservation",
+                dbReservation.getReservationId(),
+                dbTrip.getId()
+
         );
+
+    }
+
+    public TripReservationsResponse getTripReservations(Long tripId) {
+
+        List<Reservation> reservations = reservationRepository.findReservationsByTripId(tripId);
+        List<Integer> listOfId = new ArrayList<>();
+
+        for(Reservation r: reservations){
+            listOfId.add(r.getReservationId());
+        }
+
+        return new TripReservationsResponse(
+                "SUCCESS",
+                "Reservations successfully retrieved",
+                listOfId);
+
+    }
+
+    public TripReservationsResponse getCustomerReservations(Integer customerId) {
+
+        List<Reservation> reservations = reservationRepository.findReservationsByCustomerId(customerId);
+        List<Integer> listOfId = new ArrayList<>();
+
+        for(Reservation r: reservations){
+            listOfId.add(r.getReservationId());
+        }
+
+        return new TripReservationsResponse(
+                "SUCCESS",
+                "Reservations successfully retrieved",
+                listOfId);
 
     }
 }

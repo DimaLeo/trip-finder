@@ -19,7 +19,6 @@ public class Customer {
     private String taxCode;
     private String name;
     private String surname;
-
     @Column(name = "email", unique = true)
     private String email;
 

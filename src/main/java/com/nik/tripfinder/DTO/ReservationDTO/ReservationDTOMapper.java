@@ -12,7 +12,7 @@ public class ReservationDTOMapper implements Function<Reservation, ReservationDT
     @Override
     public ReservationDTO apply(Reservation reservation) {
         return new ReservationDTO(
-                reservation.getId(),
+                reservation.getReservationId(),
                 reservation.getCustomer().getName(),
                 reservation.getCustomer().getSurname(),
                 reservation.getCustomer().getEmail(),

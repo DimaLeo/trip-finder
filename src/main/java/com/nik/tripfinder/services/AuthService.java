@@ -324,23 +324,12 @@ public class AuthService {
                     body.getUserType());
 
             try{
-                userRepository.save(newUser);
+                newUser = userRepository.save(newUser);
             }
             catch (Exception e){
                 return new AgencyResponse(
                         "FAILED",
                         "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
-            }
-
-            try{
-                newUser = userRepository.findUserByUsername(newUser.getUsername()).get();
-            }
-            catch (Exception e){
-                return new AgencyResponse(
-                        "FAILED",
-                        "Failed to retrieve newly inserted user.\n" +
                                 "message : "+ e.getMessage()
                 );
             }
@@ -352,7 +341,7 @@ public class AuthService {
                     body.getOwner());
 
             try{
-                agenciesRepository.save(newAgency);
+                newAgency = agenciesRepository.save(newAgency);
             }
             catch (Exception e){
                 return new AgencyResponse(
@@ -361,9 +350,6 @@ public class AuthService {
                                 "message : "+ e.getMessage()
                 );
             }
-
-            agenciesRepository.save(newAgency);
-
 
             return new AgencyResponse(
                     "SUCCESS",
@@ -396,23 +382,12 @@ public class AuthService {
                     body.getUserType());
 
             try{
-                userRepository.save(newUser);
+                newUser = userRepository.save(newUser);
             }
             catch (Exception e){
                 return new CustomerResponse(
                         "FAILED",
                         "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
-            }
-
-            try{
-                newUser = userRepository.findUserByUsername(newUser.getUsername()).get();
-            }
-            catch (Exception e){
-                return new CustomerResponse(
-                        "FAILED",
-                        "Failed to retrieve newly inserted user.\n" +
                                 "message : "+ e.getMessage()
                 );
             }
@@ -424,8 +399,17 @@ public class AuthService {
                     body.getSurname(),
                     body.getEmail());
 
-            customersRepository.save(newCustomer);
+            try{
+                newCustomer = customersRepository.save(newCustomer);
 
+            }
+            catch (Exception e){
+                return new CustomerResponse(
+                        "FAILED",
+                        "Failed to insert customer to the db.\n" +
+                                "message : "+ e.getMessage()
+                );
+            }
 
             return new CustomerResponse(
                     "SUCCESS",

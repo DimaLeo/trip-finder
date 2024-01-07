@@ -2,6 +2,7 @@ package com.nik.tripfinder.models;
 
 
 import jakarta.persistence.*;
+import org.aspectj.lang.annotation.RequiredTypes;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "start_date")
     private Date startDate;
     @Column(name = "end_date")

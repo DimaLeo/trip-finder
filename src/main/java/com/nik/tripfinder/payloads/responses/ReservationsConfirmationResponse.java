@@ -8,7 +8,7 @@ import java.util.List;
 public class ReservationsConfirmationResponse extends GenericResponse{
 
     @JsonProperty("reservation_id")
-    private Long reservationId;
+    private Integer reservationId;
     @JsonProperty("trip_id")
     private Long tripId;
 
@@ -16,13 +16,13 @@ public class ReservationsConfirmationResponse extends GenericResponse{
         super(status, message);
     }
 
-    public ReservationsConfirmationResponse(String status, String message, Long reservationId, Long tripId) {
+    public ReservationsConfirmationResponse(String status, String message, Integer reservationId, Long tripId) {
         super(status, message);
         this.reservationId = reservationId;
         this.tripId = tripId;
     }
 
-    public Long getReservationId() {
+    public Integer getReservationId() {
         return reservationId;
     }
 

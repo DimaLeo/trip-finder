@@ -1,6 +1,7 @@
 package com.nik.tripfinder.payloads.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.aspectj.lang.annotation.RequiredTypes;
 
 public class NewAgencyRequest {
     private String username;
