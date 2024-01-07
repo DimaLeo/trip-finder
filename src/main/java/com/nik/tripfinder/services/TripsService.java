@@ -24,8 +24,8 @@ public class TripsService {
         Long startDate,
         Long endDate,
         String destination,
-        String departurePoint) {
-        return tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departurePoint);
+        String departureArea) {
+        return tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
     }
 
     public Trip getTripInfo(Long id) {
@@ -36,8 +36,8 @@ public class TripsService {
         return tripsRepository.findAllDestinations();
     }
 
-    public List<String> getAllDeparturePoints() {
-        return tripsRepository.findAllDeparturePoints();
+    public List<String> getAllDepartureAreas() {
+        return tripsRepository.findAllDepartureAreas();
     }
     
 }
