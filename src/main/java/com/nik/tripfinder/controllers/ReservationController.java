@@ -1,6 +1,7 @@
 package com.nik.tripfinder.controllers;
 
 import com.nik.tripfinder.payloads.requests.NewReservationRequest;
+import com.nik.tripfinder.payloads.responses.CustomerReservationsResponse;
 import com.nik.tripfinder.payloads.responses.ReservationsConfirmationResponse;
 import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.services.ReservationService;
@@ -38,9 +39,9 @@ public class ReservationController {
     }
 
     @GetMapping("/customer-reservations/{customer_id}")
-    public ResponseEntity<TripReservationsResponse> getCustomerReservations(@PathVariable(name = "customer_id") Integer customer_id) {
+    public ResponseEntity<CustomerReservationsResponse> getCustomerReservations(@PathVariable(name = "customer_id") Integer customer_id) {
 
-        TripReservationsResponse responseBody = reservationService.getCustomerReservations(customer_id);
+        CustomerReservationsResponse responseBody = reservationService.getCustomerReservations(customer_id);
 
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);

@@ -1,9 +1,6 @@
 package com.nik.tripfinder.payloads.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nik.tripfinder.DTO.ReservationDTO.ReservationDTO;
-
-import java.util.List;
 
 public class ReservationsConfirmationResponse extends GenericResponse{
 

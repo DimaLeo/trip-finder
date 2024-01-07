@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface AgenciesRepository extends JpaRepository<Agency, Integer> {
 
     Optional<Agency> findAgencyByBrandNameOrTaxCode(String brandName, String taxCode);
-    Optional<Agency> findAgencyById(Integer id);
+//    Optional<Agency> findAgencyById(Integer id);
 
 }

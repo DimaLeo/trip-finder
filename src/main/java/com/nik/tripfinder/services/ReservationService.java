@@ -1,10 +1,14 @@
 package com.nik.tripfinder.services;
 
-import com.nik.tripfinder.DTO.ReservationDTO.ReservationDTOMapper;
+import com.nik.tripfinder.DTO.TripDTO.TripDTO;
+import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
+import com.nik.tripfinder.payloads.Objects.CustomerReservation;
 import com.nik.tripfinder.payloads.requests.NewReservationRequest;
+import com.nik.tripfinder.payloads.responses.CustomerReservationsResponse;
+import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.payloads.responses.ReservationsConfirmationResponse;
 import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
@@ -13,7 +17,6 @@ import com.nik.tripfinder.repositories.TripsRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,13 +26,13 @@ public class ReservationService {
     private final CustomersRepository customersRepository;
     private final TripsRepository tripsRepository;
     private final ReservationRepository reservationRepository;
-    private final ReservationDTOMapper reservationDTOMapper;
+    private final TripDTOMapper tripDTOMapper;
 
-    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository, ReservationDTOMapper reservationDTOMapper) {
+    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository, TripDTOMapper tripDTOMapper) {
         this.customersRepository = customersRepository;
         this.tripsRepository = tripsRepository;
         this.reservationRepository = reservationRepository;
-        this.reservationDTOMapper = reservationDTOMapper;
+        this.tripDTOMapper = tripDTOMapper;
     }
 
     private Customer retrieveReservationCustomer(String username){
@@ -64,7 +67,7 @@ public class ReservationService {
     private Reservation retrieveReservation(Integer customerId, Long tripId){
 
         Optional<Reservation> reservationOptional =
-                reservationRepository.findReservationByCustomerIdAndTripId(customerId, tripId);
+                reservationRepository.findReservationByCustomerCustomerIdAndTripId(customerId, tripId);
 
         if(reservationOptional.isPresent()){
             return reservationOptional.get();
@@ -125,7 +128,7 @@ public class ReservationService {
         }
 
         try {
-            dbReservation = retrieveReservation(dbCustomer.getId(), dbTrip.getId());
+            dbReservation = retrieveReservation(dbCustomer.getUser().getId(), dbTrip.getId());
         }
         catch (Exception e) {
             return new ReservationsConfirmationResponse(
@@ -203,19 +206,24 @@ public class ReservationService {
 
     }
 
-    public TripReservationsResponse getCustomerReservations(Integer customerId) {
+    public CustomerReservationsResponse getCustomerReservations(Integer customerId) {
 
-        List<Reservation> reservations = reservationRepository.findReservationsByCustomerId(customerId);
-        List<Integer> listOfId = new ArrayList<>();
+        List<Reservation> reservations = reservationRepository.findReservationsByCustomerCustomerId(customerId);
+        List<CustomerReservation> reservationsList = new ArrayList<>();
 
         for(Reservation r: reservations){
-            listOfId.add(r.getReservationId());
+            reservationsList.add(
+                    new CustomerReservation(
+                            r.getReservationId(),
+                            tripDTOMapper.apply(r.getTrip())
+                    )
+            );
         }
 
-        return new TripReservationsResponse(
+        return new CustomerReservationsResponse(
                 "SUCCESS",
                 "Reservations successfully retrieved",
-                listOfId);
+                reservationsList);
 
     }
 }
