@@ -11,7 +11,7 @@ public record ReservationDTO(
     String email,
     String destination,
     @JsonProperty("departure_date")
-    Date startDate
+    Long startDate
 
 ) {
 }
