@@ -43,7 +43,6 @@ public class ReservationController {
 
         CustomerReservationsResponse responseBody = reservationService.getCustomerReservations(customer_id);
 
-
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
