@@ -2,9 +2,6 @@ package com.nik.tripfinder.models;
 
 
 import jakarta.persistence.*;
-import org.aspectj.lang.annotation.RequiredTypes;
-
-import java.util.Date;
 
 @Entity
 @Table(name = "trips")
@@ -13,23 +10,23 @@ public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "start_date")
-    private Date startDate;
-    @Column(name = "end_date")
-    private Date endDate;
-    @Column(name = "departure_point")
+    @Column(name = "start_date", nullable = false)
+    private Long startDate;
+    @Column(name = "end_date", nullable = false)
+    private Long endDate;
+    @Column(name = "departure_point", nullable = false)
     private String departurePoint;
+    @Column(nullable = false)
     private String destination;
-    @Column(name = "trip_schedule")
+    @Column(name = "trip_schedule", columnDefinition = "MEDIUMTEXT", nullable = false)
     private String tripSchedule;
-    @Column(name = "max_participatns")
+    @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants;
     // @ManyToOne
     // @JoinColumn(name = "tax_code")
     // private Agency agency;
 
-    public Trip(Long id, Date startDate, Date endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departurePoint, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -48,11 +45,11 @@ public class Trip {
         return id;
     }
 
-    public Date getStartDate() {
+    public Long getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public Long getEndDate() {
         return endDate;
     }
 

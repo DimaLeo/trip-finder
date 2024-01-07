@@ -27,11 +27,11 @@ public class PopulateDatabase implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         
-        Trip t1 = new Trip(1l, Date.valueOf(LocalDate.of(2024, 1, 3)), Date.valueOf(LocalDate.of(2024, 1, 3)), "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t1 = new Trip(1l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
         tripsService.save(t1);
-        Trip t2 = new Trip(2l, Date.valueOf(LocalDate.of(2024, 1, 6)), Date.valueOf(LocalDate.of(2024, 1, 8)), "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t2 = new Trip(2l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
         tripsService.save(t2);
-        Trip t3 = new Trip(3l, Date.valueOf(LocalDate.of(2024, 1, 12)), Date.valueOf(LocalDate.of(2024, 1, 15)), "Aristotelous Square", "Olympus mountain", "test", 45);
+        Trip t3 = new Trip(3l, 1705518000000l, 1705518000000l, "Aristotelous Square", "Olympus mountain", "test", 45);
         tripsService.save(t3);
 
         NewCustomerRequest c1 = new NewCustomerRequest(

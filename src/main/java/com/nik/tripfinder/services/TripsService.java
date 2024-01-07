@@ -3,7 +3,6 @@ package com.nik.tripfinder.services;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.repositories.TripsRepository;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,8 +21,8 @@ public class TripsService {
     }
 
     public List<Trip> findTripsWithOptionalParameters(
-        Date startDate,
-        Date endDate,
+        Long startDate,
+        Long endDate,
         String destination,
         String departurePoint) {
         return tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departurePoint);
