@@ -27,14 +27,25 @@ public class Trip {
      @JoinColumn(name = "agency_id")
      private Agency agency;
 
-    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.departureArea = departureArea;
         this.destination = destination;
         this.tripSchedule = tripSchedule;
-        // this.agency = agency;
+        this.maxParticipants = maxParticipants;
+    }
+
+
+    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Agency agency, Integer maxParticipants) {
+        this.id = id;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.departureArea = departureArea;
+        this.destination = destination;
+        this.tripSchedule = tripSchedule;
+        this.agency = agency;
         this.maxParticipants = maxParticipants;
     }
 
