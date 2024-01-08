@@ -22,9 +22,10 @@ public class Trip {
     private String tripSchedule;
     @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants;
-    // @ManyToOne
-    // @JoinColumn(name = "tax_code")
-    // private Agency agency;
+
+    @ManyToOne
+     @JoinColumn(name = "agency_id")
+     private Agency agency;
 
     public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, /*Agency agency,*/ Integer maxParticipants) {
         this.id = id;

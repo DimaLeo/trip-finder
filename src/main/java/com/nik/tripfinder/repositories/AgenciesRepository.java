@@ -9,6 +9,7 @@ public interface AgenciesRepository extends JpaRepository<Agency, String> {
 
     Optional<Agency> findAgencyByBrandNameOrTaxCode(String brandName, String taxCode);
     Optional<Agency> findAgencyByAgencyId(Integer id);
+    Optional<Agency> findAgencyByUserId(Integer userId);
 
     Optional<Agency> findAgencyByTaxCode(String agency);
 
