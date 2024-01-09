@@ -103,11 +103,11 @@ public class PopulateDatabase implements CommandLineRunner {
         agenciesRepository.save(a1);
         agenciesRepository.save(a2);
 
-        Trip t1 = new Trip(1l, 1705190400000l, 1705017600000l, "Thessaloniki", "Olympus mountain, Litochoro, Katerini", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", a1, 45);
+        Trip t1 = new Trip(1l, 1705190400000l, 1705017600000l, "Thessaloniki", "Olympus mountain, Litochoro, Katerini", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 45, a1);
         tripsRepository.save(t1);
-        Trip t2 = new Trip(2l, 1705622400000l, 1705795200000l, "Athens", "Parnassos", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", a1, 50);
+        Trip t2 = new Trip(2l, 1705622400000l, 1705795200000l, "Athens", "Parnassos", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 50, a2);
         tripsRepository.save(t2);
-        Trip t3 = new Trip(3l, 1705708800000l, 1705795200000l, "Kavala", "Drama, Exochi, Falakro", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", a1, 32);
+        Trip t3 = new Trip(3l, 1705708800000l, 1705795200000l, "Kavala", "Drama, Exochi, Falakro", "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 32, a1);
         tripsRepository.save(t3);
 
         Reservation r1 = new Reservation(

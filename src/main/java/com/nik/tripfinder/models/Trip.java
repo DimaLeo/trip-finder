@@ -1,6 +1,5 @@
 package com.nik.tripfinder.models;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -24,10 +23,11 @@ public class Trip {
     private Integer maxParticipants;
 
     @ManyToOne
-     @JoinColumn(name = "agency_id")
-     private Agency agency;
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
-    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants) {
+    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
+            Integer maxParticipants, Agency agency) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -35,18 +35,7 @@ public class Trip {
         this.destination = destination;
         this.tripSchedule = tripSchedule;
         this.maxParticipants = maxParticipants;
-    }
-
-
-    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Agency agency, Integer maxParticipants) {
-        this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.departureArea = departureArea;
-        this.destination = destination;
-        this.tripSchedule = tripSchedule;
         this.agency = agency;
-        this.maxParticipants = maxParticipants;
     }
 
     public Trip() {

@@ -57,8 +57,8 @@ public class TripsService {
                     trip.getTrip().departureArea(),
                     trip.getTrip().destination(),
                     trip.getTrip().tripSchedule(),
-                    dbAgency,
-                    trip.getTrip().maxParticipants()
+                    trip.getTrip().maxParticipants(),
+                    dbAgency
             );
 
             newTrip = tripsRepository.save(newTrip);
