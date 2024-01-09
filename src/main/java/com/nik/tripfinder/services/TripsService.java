@@ -11,6 +11,7 @@ import com.nik.tripfinder.repositories.TripsRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,14 @@ public class TripsService {
     private final AgenciesRepository agenciesRepository;
     private final TripDTOMapper tripDTOMapper;
 
-    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository, TripDTOMapper tripDTOMapper) {
+    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
+            TripDTOMapper tripDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
         this.tripDTOMapper = tripDTOMapper;
     }
 
-    public NewTripResponse save(NewTripRequest trip) {
+    public NewTripResponse save(NewTripRequest trip) throws Exception {
 
         Agency dbAgency;
 
@@ -35,19 +37,12 @@ public class TripsService {
             Optional<Agency> agencyOptional = agenciesRepository.findAgencyByAgencyId(trip.getAgencyId());
 
             if (!agencyOptional.isPresent()) {
-                return new NewTripResponse(
-                        "FAILED",
-                        "Failed to retrieve the agency from db."
-                );
+                throw new Exception("Failed to retrieve the agency from db.");
             }
 
             dbAgency = agencyOptional.get();
         } catch (Exception e) {
-            return new NewTripResponse(
-                    "FAILED",
-                    "Failed while trying to retrieve agency info.\n"+
-                            "message : "+ e.getMessage()
-            );
+            throw new Exception("Failed while trying to retrieve agency info");
         }
 
         try {
@@ -58,24 +53,14 @@ public class TripsService {
                     trip.getDestination(),
                     trip.getTripSchedule(),
                     trip.getMaxParticipants(),
-                    dbAgency
-            );
+                    dbAgency);
 
             newTrip = tripsRepository.save(newTrip);
 
-            return new NewTripResponse(
-                    "SUCCESS",
-                    "Trip successfully saved",
-                    tripDTOMapper.apply(newTrip)
-            );
+            return new NewTripResponse("SUCCESS", "Trip successfully saved", tripDTOMapper.apply(newTrip));
 
-        }
-        catch (Exception e) {
-            return new NewTripResponse(
-                    "FAILED",
-                    "Failed to save new trip.\n"+
-                            "message : "+ e.getMessage()
-            );
+        } catch (Exception e) {
+            throw new Exception("Error while creating the new trip");
         }
     }
 
@@ -85,12 +70,10 @@ public class TripsService {
             String destination,
             String departureArea,
             Integer agencyId) {
-        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId);
-        return tripDTOMapper.mapToDTOList(trips);
-    }
 
-    public Trip getTripInfo(Long id) {
-        return tripsRepository.findById(id).orElse(null);
+        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination,
+                departureArea, agencyId);
+        return tripDTOMapper.mapToDTOList(trips);
     }
 
     public List<String> getAllDestinations() {

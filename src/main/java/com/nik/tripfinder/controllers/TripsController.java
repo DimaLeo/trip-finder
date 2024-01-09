@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 // /api/trips
 @RestController
@@ -32,7 +31,7 @@ public class TripsController {
 
     // POST /: create trip
     @PostMapping("/")
-    public ResponseEntity<NewTripResponse> createTrip(@RequestBody NewTripRequest trip) {
+    public ResponseEntity<NewTripResponse> createTrip(@RequestBody NewTripRequest trip) throws Exception {
         NewTripResponse newTrip = tripsService.save(trip);
         return new ResponseEntity<>(newTrip, HttpStatus.CREATED);
     }
@@ -50,32 +49,23 @@ public class TripsController {
             @RequestParam(required = false) Long endDate,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) String departureArea,
-            @RequestParam(required = false) Integer agencyId) {
+            @RequestParam(required = false) Integer agencyId) throws Exception {
 
         List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
 
-    // GET /{tripId}: get trip info
-    @GetMapping("/{id}")
-    public ResponseEntity<Trip> getTrip(@PathVariable Long id) {
-        Trip trip = tripsService.getTripInfo(id);
-
-        if (trip != null) return new ResponseEntity<>(trip, HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
     // GET /destinations: get the destinations of all the trips
     @GetMapping("/destinations")
-    public ResponseEntity<List<String>> getAllDestinations() {
+    public ResponseEntity<List<String>> getAllDestinations() throws Exception {
         List<String> destinations = tripsService.getAllDestinations();
         return new ResponseEntity<>(destinations, HttpStatus.OK);
     }
 
-    // GET /departure-points: get the departure points of all the trips
+    // GET /departure-areas: get the departure areas of all the trips
     @GetMapping("/departure-areas")
-    public ResponseEntity<List<String>> getAllDepartureAreas() {
+    public ResponseEntity<List<String>> getAllDepartureAreas() throws Exception {
         List<String> departureAreas = tripsService.getAllDepartureAreas();
         return new ResponseEntity<>(departureAreas, HttpStatus.OK);
     }
