@@ -24,11 +24,11 @@ public class AgencyController {
         return new ResponseEntity<>(agenciesService.getAllAgencies(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{user_id}/trips")
-    public ResponseEntity<AgencyTripsResponse> findTrips(@PathVariable Integer user_id) throws Exception {
-        return new ResponseEntity<>(agenciesService.findTrips(user_id), HttpStatus.OK);
+    // @GetMapping(path = "/{user_id}/trips")
+    // public ResponseEntity<AgencyTripsResponse> findTrips(@PathVariable Integer user_id) throws Exception {
+    //     return new ResponseEntity<>(agenciesService.findTrips(user_id), HttpStatus.OK);
 
-    }
+    // }
 
     // /api/agencies
     // GET /: get all the agencies

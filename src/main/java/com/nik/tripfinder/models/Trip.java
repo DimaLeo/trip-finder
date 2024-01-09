@@ -77,9 +77,9 @@ public class Trip {
         return tripSchedule;
     }
 
-    // public Agency getAgency() {
-    //     return agency;
-    // }
+    public Agency getAgency() {
+        return agency;
+    }
 
     public Integer getMaxParticipants() {
         return maxParticipants;

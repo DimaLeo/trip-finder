@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AgenciesRepository extends JpaRepository<Agency, String> {
+public interface AgenciesRepository extends JpaRepository<Agency, Integer> {
 
     Optional<Agency> findAgencyByBrandNameOrTaxCode(String brandName, String taxCode);
     Optional<Agency> findAgencyByAgencyId(Integer id);

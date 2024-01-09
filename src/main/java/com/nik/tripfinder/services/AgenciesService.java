@@ -46,24 +46,24 @@ public class AgenciesService {
 
     }
 
-    public AgencyTripsResponse findTrips(Integer user_id) {
-        Optional<Agency> givenAgency = agenciesRepository.findAgencyByUserId(user_id);
+    // public AgencyTripsResponse findTrips(Integer user_id) {
+    //     Optional<Agency> givenAgency = agenciesRepository.findAgencyByUserId(user_id);
 
-        if (givenAgency.isPresent()) {
-            List<Trip> trips = givenAgency.get().getTrips();
-            List<TripDTO> listOfTrips = tripDTOMapper.mapToDTOList(trips);
-            return new AgencyTripsResponse(
-                    "SUCCESS",
-                    "Trips successfully loaded",
-                    givenAgency.get().getBrandName(),
-                    givenAgency.get().getOwner(),
-                    listOfTrips);
+    //     if (givenAgency.isPresent()) {
+    //         List<Trip> trips = givenAgency.get().getTrips();
+    //         List<TripDTO> listOfTrips = tripDTOMapper.mapToDTOList(trips);
+    //         return new AgencyTripsResponse(
+    //                 "SUCCESS",
+    //                 "Trips successfully loaded",
+    //                 givenAgency.get().getBrandName(),
+    //                 givenAgency.get().getOwner(),
+    //                 listOfTrips);
 
-        } else {
-            return new AgencyTripsResponse(
-                    "FAILED",
-                    "Failed to retrieve this agency from db.\n");
-        }
+    //     } else {
+    //         return new AgencyTripsResponse(
+    //                 "FAILED",
+    //                 "Failed to retrieve this agency from db.\n");
+    //     }
 
-    }
+    // }
 }

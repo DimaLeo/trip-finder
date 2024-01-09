@@ -62,7 +62,7 @@ public class Agency {
     public String getOwner() {
         return this.owner;
     }
-    public List<Trip> getTrips() {
-        return this.trips;
-    }
+    // public List<Trip> getTrips() {
+    //     return this.trips;
+    // }
 }
