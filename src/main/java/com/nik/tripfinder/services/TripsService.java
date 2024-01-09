@@ -32,7 +32,7 @@ public class TripsService {
         Agency dbAgency;
 
         try {
-            Optional<Agency> agencyOptional = agenciesRepository.findAgencyByUserId(trip.getUserId());
+            Optional<Agency> agencyOptional = agenciesRepository.findAgencyByAgencyId(trip.getAgencyId());
 
             if (!agencyOptional.isPresent()) {
                 return new NewTripResponse(
@@ -52,13 +52,12 @@ public class TripsService {
 
         try {
             Trip newTrip = new Trip(
-                    trip.getTrip().id(),
-                    trip.getTrip().startDate(),
-                    trip.getTrip().endDate(),
-                    trip.getTrip().departureArea(),
-                    trip.getTrip().destination(),
-                    trip.getTrip().tripSchedule(),
-                    trip.getTrip().maxParticipants(),
+                    trip.getStartDate(),
+                    trip.getEndDate(),
+                    trip.getDepartureArea(),
+                    trip.getDestination(),
+                    trip.getTripSchedule(),
+                    trip.getMaxParticipants(),
                     dbAgency
             );
 

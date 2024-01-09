@@ -26,9 +26,8 @@ public class Trip {
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
-    public Trip(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
+    public Trip(Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
             Integer maxParticipants, Agency agency) {
-        this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.departureArea = departureArea;
