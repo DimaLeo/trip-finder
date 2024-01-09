@@ -10,6 +10,7 @@ public class AgencyDTOMapper implements Function<Agency, AgencyDTO> {
     @Override
     public AgencyDTO apply(Agency agency) {
         return new AgencyDTO(
+                agency.getUser().getId(),
                 agency.getUser().getUsername(),
                 agency.getUser().getUserType(),
                 agency.getTaxCode(),

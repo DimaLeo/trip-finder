@@ -1,5 +1,6 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Trip;
@@ -79,12 +80,13 @@ public class TripsService {
         }
     }
 
-    public List<Trip> findTripsWithOptionalParameters(
+    public List<TripDTO> findTripsWithOptionalParameters(
             Long startDate,
             Long endDate,
             String destination,
             String departureArea) {
-        return tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
+        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
+        return tripDTOMapper.mapToDTOList(trips);
     }
 
     public Trip getTripInfo(Long id) {

@@ -1,5 +1,6 @@
 package com.nik.tripfinder.controllers;
 
+import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
 import com.nik.tripfinder.payloads.responses.NewTripResponse;
@@ -44,13 +45,13 @@ public class TripsController {
     // destination={destination}
     // departureArea={departureArea} 
     @GetMapping("/")
-    public ResponseEntity<List<Trip>> getTrips(
+    public ResponseEntity<List<TripDTO>> getTrips(
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) String departureArea) {
 
-        List<Trip> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
+        List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
