@@ -1,7 +1,7 @@
 package com.nik.tripfinder.DTO.TripDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nik.tripfinder.DTO.AgencyDTO.AgencyDTO;
+import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
 
 public record TripDTO(
         Long id,
@@ -17,6 +17,5 @@ public record TripDTO(
         @JsonProperty("max_participants")
         Integer maxParticipants,
         @JsonProperty("agency")
-        AgencyDTO agency
-) {
-}
+        MinimalAgencyDTO agency
+) {}

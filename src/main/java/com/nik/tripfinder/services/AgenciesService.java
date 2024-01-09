@@ -4,7 +4,6 @@ import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Agency;
-import com.nik.tripfinder.payloads.responses.AllAgenciesResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,21 +20,13 @@ public class AgenciesService {
         this.minimalAgencyDTOMapper = minimalAgencyDTOMapper;
     }
 
-    public AllAgenciesResponse getAllAgencies() {
-
+    public List<MinimalAgencyDTO> getAllAgencies() throws Exception {
         try {
-            List<Agency> allAgencies = agenciesRepository.findAll();
+            List<Agency> agencies = agenciesRepository.findAll();
 
-            List<MinimalAgencyDTO> listOfAgencies = minimalAgencyDTOMapper.mapToDTOList(allAgencies);
-            return new AllAgenciesResponse(
-                    "SUCCESS",
-                    "Agencies successfully loaded",
-                    listOfAgencies);
+            return minimalAgencyDTOMapper.mapToDTOList(agencies);
         } catch (Exception e) {
-            return new AllAgenciesResponse(
-                    "FAILED",
-                    "Failed to retrieve agencies from db.\n" +
-                            "message : " + e.getMessage());
+            throw new Exception("Failed to retrieve agencies from db.");
         }
 
     }

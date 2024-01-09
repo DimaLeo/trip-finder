@@ -11,7 +11,6 @@ import com.nik.tripfinder.repositories.TripsRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 import org.springframework.stereotype.Service;
 
@@ -29,12 +28,12 @@ public class TripsService {
         this.tripDTOMapper = tripDTOMapper;
     }
 
-    public NewTripResponse save(NewTripRequest trip) throws Exception {
+    public TripDTO save(NewTripRequest trip) throws Exception {
 
         Agency dbAgency;
 
         try {
-            Optional<Agency> agencyOptional = agenciesRepository.findAgencyByAgencyId(trip.getAgencyId());
+            Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
 
             if (!agencyOptional.isPresent()) {
                 throw new Exception("Failed to retrieve the agency from db.");
@@ -57,7 +56,7 @@ public class TripsService {
 
             newTrip = tripsRepository.save(newTrip);
 
-            return new NewTripResponse("SUCCESS", "Trip successfully saved", tripDTOMapper.apply(newTrip));
+            return tripDTOMapper.apply(newTrip);
 
         } catch (Exception e) {
             throw new Exception("Error while creating the new trip");

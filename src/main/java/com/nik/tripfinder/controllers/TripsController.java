@@ -1,9 +1,7 @@
 package com.nik.tripfinder.controllers;
 
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
-import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
-import com.nik.tripfinder.payloads.responses.NewTripResponse;
 import com.nik.tripfinder.services.TripsService;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +29,8 @@ public class TripsController {
 
     // POST /: create trip
     @PostMapping("/")
-    public ResponseEntity<NewTripResponse> createTrip(@RequestBody NewTripRequest trip) throws Exception {
-        NewTripResponse newTrip = tripsService.save(trip);
+    public ResponseEntity<TripDTO> createTrip(@RequestBody NewTripRequest trip) throws Exception {
+        TripDTO newTrip = tripsService.save(trip);
         return new ResponseEntity<>(newTrip, HttpStatus.CREATED);
     }
 

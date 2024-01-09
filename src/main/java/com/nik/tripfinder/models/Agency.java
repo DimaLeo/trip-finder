@@ -8,8 +8,8 @@ public class Agency {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "agency_id")
-    private Integer agencyId;
+    @Column(name = "id")
+    private Integer id;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
@@ -33,14 +33,11 @@ public class Agency {
         this.owner = owner;
     }
 
-    public Agency(Integer agencyId, String taxCode, String brandName, String owner) {
-        this.agencyId = agencyId;
-        this.taxCode = taxCode;
-        this.brandName = brandName;
-        this.owner = owner;
+    public Agency() {
     }
 
-    public Agency() {
+    public Integer getId() {
+        return this.id;
     }
 
     public User getUser() {
