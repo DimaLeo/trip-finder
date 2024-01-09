@@ -2,9 +2,6 @@ package com.nik.tripfinder.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table(name = "agencies")
 public class Agency {
@@ -22,9 +19,6 @@ public class Agency {
     @Column(name = "brand_name", unique = true)
     private String brandName;
     private String owner;
-
-    @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL)
-    private List<Trip> trips = new ArrayList<Trip>();
 
     public Agency(User user, String taxCode, String brandName, String owner) {
         this.user = user;
@@ -49,8 +43,10 @@ public class Agency {
     public Agency() {
     }
 
+    public User getUser() {
+        return this.user;
+    }
 
-    public User getUser() {return this.user;}
     public String getTaxCode() {
         return this.taxCode;
     }
@@ -62,7 +58,4 @@ public class Agency {
     public String getOwner() {
         return this.owner;
     }
-    // public List<Trip> getTrips() {
-    //     return this.trips;
-    // }
 }
