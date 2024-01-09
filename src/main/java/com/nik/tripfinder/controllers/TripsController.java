@@ -39,7 +39,7 @@ public class TripsController {
 
     // GET /: get all trips
     // or filtered search of trips:
-    // agencyID={agencyID}
+    // agencyId={agencyID}
     // startDate={startDate}
     // endDate={endDate}
     // destination={destination}
@@ -49,9 +49,10 @@ public class TripsController {
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate,
             @RequestParam(required = false) String destination,
-            @RequestParam(required = false) String departureArea) {
+            @RequestParam(required = false) String departureArea,
+            @RequestParam(required = false) Integer agencyId) {
 
-        List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
+        List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }

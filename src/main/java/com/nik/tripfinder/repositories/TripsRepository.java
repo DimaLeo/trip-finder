@@ -19,11 +19,13 @@ public interface TripsRepository extends JpaRepository<Trip, Long> {
             "WHERE (:startDate IS NULL OR t.startDate = :startDate) " +
             "AND (:endDate IS NULL OR t.endDate = :endDate) " +
             "AND (:destination IS NULL OR t.destination = :destination) " +
-            "AND (:departureArea IS NULL OR t.departureArea = :departureArea)")
+            "AND (:departureArea IS NULL OR t.departureArea = :departureArea) " +
+            "AND (:agencyId IS NULL OR t.agency.agencyId = :agencyId) ")
     List<Trip> findTripsWithOptionalParameters(
             @Param("startDate") Long startDate,
             @Param("endDate") Long endDate,
             @Param("destination") String destination,
-            @Param("departureArea") String departureArea);
+            @Param("departureArea") String departureArea,
+            @Param("agencyId") Integer agencyId);
 
 }

@@ -84,8 +84,9 @@ public class TripsService {
             Long startDate,
             Long endDate,
             String destination,
-            String departureArea) {
-        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea);
+            String departureArea,
+            Integer agencyId) {
+        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId);
         return tripDTOMapper.mapToDTOList(trips);
     }
 
