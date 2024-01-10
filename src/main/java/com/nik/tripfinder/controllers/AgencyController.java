@@ -22,7 +22,7 @@ public class AgencyController {
         this.agenciesService = agenciesService;
     }
 
-    @GetMapping(path = "/")
+    @GetMapping(path = "")
     public ResponseEntity<List<MinimalAgencyDTO>> getAllAgencies() throws Exception {
         return new ResponseEntity<>(agenciesService.getAllAgencies(), HttpStatus.OK);
     }
