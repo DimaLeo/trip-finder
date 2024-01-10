@@ -63,6 +63,7 @@ public class Customer {
         return customerId;
     }
 
+
     public User getUser() {
         return user;
     }

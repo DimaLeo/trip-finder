@@ -168,10 +168,43 @@ public class AuthService {
                 User dbUser = existingUser.get();
 
                 if(encoder.matches(body.getPassword(), dbUser.getPassword())){
+
+                    Integer secondary_id;
+
+                    if(dbUser.getUserType().equals("agency")){
+                        Optional<Agency> optionalAgency = agenciesRepository.findAgencyByUserId(dbUser.getId());
+
+                        if(optionalAgency.isPresent()){
+                            secondary_id = optionalAgency.get().getId();
+                        }
+                        else {
+                            return new AuthenticationResponse(
+                                    "FAILED",
+                                    "No Agency or Customer found for provided username"
+                            );
+                        }
+                    }
+                    else{
+                        Optional<Customer> optionalCustomer = customersRepository.findCustomerByUserId(dbUser.getId());
+
+                        if(optionalCustomer.isPresent()){
+                            secondary_id = optionalCustomer.get().getCustomerId();
+                        }
+                        else {
+                            return new AuthenticationResponse(
+                                    "FAILED",
+                                    "No Agency or Customer found for provided username"
+                            );
+                        }
+                    }
+
+
+
                     return new AuthenticationResponse(
                             "SUCCESS",
                             "Authenticated",
-                            userDTOMapper.apply(dbUser)
+                            userDTOMapper.apply(dbUser),
+                            secondary_id
                     );
                 }
                 else{
