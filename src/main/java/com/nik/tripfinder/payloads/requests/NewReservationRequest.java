@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class NewReservationRequest {
 
-    String username;
+    Integer userId;
     @JsonProperty("trip_id")
     Long tripId;
 
-    public String getUsername() {
-        return username;
+    public Integer getUserId() {
+        return userId;
     }
 
     public Long getTripId() {

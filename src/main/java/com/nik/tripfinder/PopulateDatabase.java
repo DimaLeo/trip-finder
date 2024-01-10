@@ -33,10 +33,10 @@ public class PopulateDatabase implements CommandLineRunner {
         @Transactional
         public void run(String... args) throws Exception {
 
-                User u1 = new User(1, "customer1", encoder.encode("12345678"), "customer");
-                User u2 = new User(2, "customer2", encoder.encode("12345678"), "customer");
-                User u3 = new User(3, "agency1", encoder.encode("12345678"), "agency");
-                User u4 = new User(4, "agency2", encoder.encode("12345678"), "agency");
+                User u1 = new User(1, "customer1", encoder.encode("test"), "customer");
+                User u2 = new User(2, "customer2", encoder.encode("test"), "customer");
+                User u3 = new User(3, "agency1", encoder.encode("test"), "agency");
+                User u4 = new User(4, "agency2", encoder.encode("test"), "agency");
 
                 u1 = userRepository.save(u1);
                 u2 = userRepository.save(u2);
@@ -90,15 +90,15 @@ public class PopulateDatabase implements CommandLineRunner {
                 Reservation r2 = new Reservation(c2, t1);
                 Reservation r3 = new Reservation(c1, t2);
                 Reservation r4 = new Reservation(c2, t2);
-                Reservation r5 = new Reservation(c1, t3);
-                Reservation r6 = new Reservation(c2, t3);
+                // Reservation r5 = new Reservation(c1, t3);
+                // Reservation r6 = new Reservation(c2, t3);
 
                 reservationRepository.save(r1);
                 reservationRepository.save(r2);
                 reservationRepository.save(r3);
                 reservationRepository.save(r4);
-                reservationRepository.save(r5);
-                reservationRepository.save(r6);
+                // reservationRepository.save(r5);
+                // reservationRepository.save(r6);
 
         }
 

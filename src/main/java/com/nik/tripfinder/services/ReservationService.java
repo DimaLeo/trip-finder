@@ -35,10 +35,10 @@ public class ReservationService {
         this.tripDTOMapper = tripDTOMapper;
     }
 
-    private Customer retrieveReservationCustomer(String username){
+    private Customer retrieveReservationCustomer(Integer userId){
 
         Optional<Customer> customerOptional =
-                customersRepository.findCustomerByUserUsername(username);
+                customersRepository.findCustomerByUserId(userId);
 
         if(customerOptional.isPresent()){
             return customerOptional.get();
@@ -91,7 +91,7 @@ public class ReservationService {
 
         try{
 
-            dbCustomer = retrieveReservationCustomer(body.getUsername());
+            dbCustomer = retrieveReservationCustomer(body.getUserId());
 
             if(dbCustomer == null){
                 return new ReservationsConfirmationResponse(
