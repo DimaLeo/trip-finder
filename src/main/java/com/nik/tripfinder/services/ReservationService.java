@@ -1,6 +1,5 @@
 package com.nik.tripfinder.services;
 
-import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
@@ -8,7 +7,6 @@ import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.Objects.CustomerReservation;
 import com.nik.tripfinder.payloads.requests.NewReservationRequest;
 import com.nik.tripfinder.payloads.responses.CustomerReservationsResponse;
-import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.payloads.responses.ReservationsConfirmationResponse;
 import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
@@ -35,10 +33,10 @@ public class ReservationService {
         this.tripDTOMapper = tripDTOMapper;
     }
 
-    private Customer retrieveReservationCustomer(Integer userId){
+    private Customer retrieveReservationCustomer(Integer customerId){
 
         Optional<Customer> customerOptional =
-                customersRepository.findCustomerByUserId(userId);
+                customersRepository.findById(customerId);
 
         if(customerOptional.isPresent()){
             return customerOptional.get();
@@ -79,70 +77,49 @@ public class ReservationService {
 
 
 
-    private Long countTripReservations(Long id){
+    private Long countTripReservations(Long id) {
         return reservationRepository.countByTripId(id);
     }
 
-    public ReservationsConfirmationResponse createReservation(NewReservationRequest body) {
+    public ReservationsConfirmationResponse createReservation(NewReservationRequest body) throws Exception {
 
         Customer dbCustomer;
         Trip dbTrip;
         Reservation dbReservation;
 
-        try{
+        try {
 
-            dbCustomer = retrieveReservationCustomer(body.getUserId());
+            dbCustomer = retrieveReservationCustomer(body.getCustomerId());
 
-            if(dbCustomer == null){
-                return new ReservationsConfirmationResponse(
-                        "FAILED",
-                        "Something went wrong, customer does not exist"
-                );
+            if(dbCustomer == null) {
+                throw new Exception("Something went wrong, customer does not exist");
             }
         }
         catch (Exception e) {
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Failed to retrieve customer from db\n" +
-                            "message: " + e.getMessage()
-            );
+            throw new Exception("Failed to retrieve customer from db");
         }
 
-        try{
+        try {
 
             dbTrip = retrieveReservationTrip(body.getTripId());
 
-            if(dbTrip == null){
-                return new ReservationsConfirmationResponse(
-                        "FAILED",
-                        "Something went wrong, trip does not exist"
-                );
+            if (dbTrip == null) {
+                throw new Exception("Something went wrong, trip does not exist");
             }
         }
         catch (Exception e) {
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Failed to retrieve trip from db\n" +
-                            "message: " + e.getMessage()
-            );
+            throw new Exception("Failed to retrieve trip from db");
         }
 
         try {
             dbReservation = retrieveReservation(dbCustomer.getUser().getId(), dbTrip.getId());
         }
         catch (Exception e) {
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Failed to check reservation existence in db\n" +
-                            "message: " + e.getMessage()
-            );
+            throw new Exception("Failed to check reservation existence in db");
         }
 
         if(dbReservation!=null){
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Trip already reserved by the user"
-            );
+            throw new Exception("Trip already reserved by the user");
         }
 
 
@@ -150,20 +127,13 @@ public class ReservationService {
             Long takenSlots = countTripReservations(dbTrip.getId());
             System.out.println(takenSlots);
             if(dbTrip.getMaxParticipants() <= takenSlots){
-                return new ReservationsConfirmationResponse(
-                        "FAILED",
-                        "No available slots for this trip"
-                );
+                throw new Exception("No available slots for this trip");
             }
 
         }
         catch (Exception e){
 
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Failed to retrieve available slots for the trip\n"+
-                            "message: " + e.getMessage()
-            );
+            throw new Exception("Failed to retrieve available slots for the trip");
 
         }
         Reservation newReservation = new Reservation(dbCustomer,dbTrip);
@@ -172,11 +142,7 @@ public class ReservationService {
             dbReservation = reservationRepository.save(newReservation);
         }
         catch (Exception e) {
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Failed to save reservation to db\n" +
-                            "message: " + e.getMessage()
-            );
+            throw new Exception("Failed to save reservation to db");
         }
 
 

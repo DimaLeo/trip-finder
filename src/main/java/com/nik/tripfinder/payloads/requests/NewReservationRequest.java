@@ -2,11 +2,11 @@ package com.nik.tripfinder.payloads.requests;
 
 public class NewReservationRequest {
 
-    Integer userId;
+    Integer customerId;
     Long tripId;
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getCustomerId() {
+        return customerId;
     }
 
     public Long getTripId() {

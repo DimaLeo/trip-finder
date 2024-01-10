@@ -19,7 +19,7 @@ public class ReservationController {
     }
 
     @PostMapping("/create-reservation")
-    public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) {
+    public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) throws Exception {
 
         ReservationsConfirmationResponse responseBody = reservationService.createReservation(body);
 
