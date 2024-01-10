@@ -3,13 +3,16 @@ package com.nik.tripfinder.services;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Agency;
+import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
 import com.nik.tripfinder.payloads.responses.NewTripResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
+import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,12 +22,14 @@ public class TripsService {
 
     private final TripsRepository tripsRepository;
     private final AgenciesRepository agenciesRepository;
+    private final ReservationRepository reservationRepository;
     private final TripDTOMapper tripDTOMapper;
 
-    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
-            TripDTOMapper tripDTOMapper) {
+    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository, ReservationRepository reservationRepository,
+                        TripDTOMapper tripDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
+        this.reservationRepository = reservationRepository;
         this.tripDTOMapper = tripDTOMapper;
     }
 
@@ -68,11 +73,39 @@ public class TripsService {
             Long endDate,
             String destination,
             String departureArea,
-            Integer agencyId) {
+            Integer agencyId,
+            Integer customerId) {
 
-        List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(startDate, endDate, destination,
-                departureArea, agencyId);
-        return tripDTOMapper.mapToDTOList(trips);
+        List<TripDTO> trips =
+                tripDTOMapper.mapToDTOList(
+                        tripsRepository
+                                .findTripsWithOptionalParameters(
+                                        startDate,
+                                        endDate,
+                                        destination,
+                                        departureArea,
+                                        agencyId));
+
+        List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
+
+
+        for(TripDTO trip: trips){
+            if(!reservations.isEmpty()){
+                for(Reservation r: reservations){
+                    if(Objects.equals(r.getCustomer().getCustomerId(), customerId)){
+                        trip.setIsReserved(true);
+                        reservations.remove(r);
+                        break;
+                    }
+                }
+            }
+            else {
+                break;
+            }
+
+        }
+
+        return trips;
     }
 
     public List<String> getAllDestinations() {

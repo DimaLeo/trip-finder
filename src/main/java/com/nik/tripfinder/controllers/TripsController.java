@@ -47,9 +47,10 @@ public class TripsController {
             @RequestParam(required = false) Long endDate,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) String departureArea,
-            @RequestParam(required = false) Integer agencyId) throws Exception {
+            @RequestParam(required = false) Integer agencyId,
+            @RequestParam(required = false) Integer customerId) throws Exception {
 
-        List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId);
+        List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId, customerId);
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
