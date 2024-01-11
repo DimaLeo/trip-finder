@@ -89,11 +89,10 @@ public class TripsService {
 
         List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
 
-
         for (TripDTO trip: trips){
             if (!reservations.isEmpty()) {
                 for (Reservation r: reservations) {
-                    if (Objects.equals(r.getCustomer().getCustomerId(), customerId)) {
+                    if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
                         trip.setReservationId(r.getReservationId());
                         reservations.remove(r);
                         break;
