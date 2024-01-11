@@ -6,10 +6,11 @@ import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
-import com.nik.tripfinder.payloads.responses.NewTripResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -112,6 +113,20 @@ public class TripsService {
 
     public List<String> getAllDepartureAreas() {
         return tripsRepository.findAllDepartureAreas();
+    }
+
+    public void deleteTrip(Long id) throws EntityNotFoundException {
+        Optional<Trip> tripOptional = tripsRepository.findById(id);
+        if (tripOptional.isPresent()) {
+            List<Reservation> tripReservations = reservationRepository.findReservationsByTripId(id);
+            for (Reservation reservation : tripReservations) {
+                reservationRepository.delete(reservation);
+            }
+            Trip tripToDelete = tripOptional.get();
+            tripsRepository.delete(tripToDelete);
+        } else {
+            throw new EntityNotFoundException("Entity with id " + id + " not found");
+        }
     }
 
 }

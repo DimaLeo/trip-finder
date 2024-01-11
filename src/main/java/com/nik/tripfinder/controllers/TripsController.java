@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 // /api/trips
 @RestController
@@ -28,7 +30,7 @@ public class TripsController {
     }
 
     // POST /: create trip
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<TripDTO> createTrip(@RequestBody NewTripRequest trip) throws Exception {
         TripDTO newTrip = tripsService.save(trip);
         return new ResponseEntity<>(newTrip, HttpStatus.CREATED);
@@ -41,7 +43,7 @@ public class TripsController {
     // endDate={endDate}
     // destination={destination}
     // departureArea={departureArea} 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<TripDTO>> getTrips(
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate,
@@ -67,6 +69,12 @@ public class TripsController {
     public ResponseEntity<List<String>> getAllDepartureAreas() throws Exception {
         List<String> departureAreas = tripsService.getAllDepartureAreas();
         return new ResponseEntity<>(departureAreas, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTrip(@PathVariable Long id) throws Exception {
+        tripsService.deleteTrip(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
