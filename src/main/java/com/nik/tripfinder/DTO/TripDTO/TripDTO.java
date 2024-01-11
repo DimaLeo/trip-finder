@@ -20,8 +20,8 @@ public class TripDTO{
         @JsonProperty("agency")
         private MinimalAgencyDTO agency;
         @Nullable
-        @JsonProperty("is_reserved")
-        private Boolean isReserved;
+        @JsonProperty("reservation_id")
+        private Integer reservationId;
 
         public TripDTO(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants, MinimalAgencyDTO agency) {
                 this.id = id;
@@ -34,8 +34,8 @@ public class TripDTO{
                 this.agency = agency;
         }
 
-        public void setIsReserved(Boolean isReserved) {
-                this.isReserved = isReserved;
+        public void setReservationId(Integer reservationId) {
+                this.reservationId = reservationId;
         }
 
         public Long getId() {
@@ -71,7 +71,7 @@ public class TripDTO{
         }
 
         @Nullable
-        public Boolean getIsReserved() {
-                return isReserved;
+        public Integer getReservationId() {
+                return reservationId;
         }
 }

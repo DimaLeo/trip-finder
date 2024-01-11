@@ -94,7 +94,7 @@ public class TripsService {
             if (!reservations.isEmpty()) {
                 for (Reservation r: reservations) {
                     if (Objects.equals(r.getCustomer().getCustomerId(), customerId)) {
-                        trip.setIsReserved(true);
+                        trip.setReservationId(r.getReservationId());
                         reservations.remove(r);
                         break;
                     }

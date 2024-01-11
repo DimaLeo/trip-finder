@@ -11,6 +11,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     Optional<Reservation> findReservationByCustomerCustomerIdAndTripId(Integer customerId, Long tripId);
     List<Reservation> findReservationsByTripId(Long tripId);
     List<Reservation> findReservationsByCustomerCustomerId(Integer customerId);
-    void deleteReservationByReservationId(Integer reservationId );
+    void deleteReservationByReservationId(Integer reservationId);
     Boolean existsReservationByReservationId(Integer reservationId);
 }

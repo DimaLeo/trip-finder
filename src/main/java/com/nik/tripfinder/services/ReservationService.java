@@ -12,6 +12,9 @@ import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -88,9 +91,7 @@ public class ReservationService {
         Reservation dbReservation;
 
         try {
-
             dbCustomer = retrieveReservationCustomer(body.getCustomerId());
-
             if(dbCustomer == null) {
                 throw new Exception("Something went wrong, customer does not exist");
             }
@@ -100,9 +101,7 @@ public class ReservationService {
         }
 
         try {
-
             dbTrip = retrieveReservationTrip(body.getTripId());
-
             if (dbTrip == null) {
                 throw new Exception("Something went wrong, trip does not exist");
             }
@@ -110,7 +109,6 @@ public class ReservationService {
         catch (Exception e) {
             throw new Exception("Failed to retrieve trip from db");
         }
-
         try {
             dbReservation = retrieveReservation(dbCustomer.getUser().getId(), dbTrip.getId());
         }
@@ -118,10 +116,9 @@ public class ReservationService {
             throw new Exception("Failed to check reservation existence in db");
         }
 
-        if(dbReservation!=null){
+        if (dbReservation!=null){
             throw new Exception("Trip already reserved by the user");
         }
-
 
         try {
             Long takenSlots = countTripReservations(dbTrip.getId());
@@ -131,14 +128,12 @@ public class ReservationService {
             }
 
         }
-        catch (Exception e){
-
+        catch (Exception e) {
             throw new Exception("Failed to retrieve available slots for the trip");
-
         }
         Reservation newReservation = new Reservation(dbCustomer,dbTrip);
 
-        try{
+        try {
             dbReservation = reservationRepository.save(newReservation);
         }
         catch (Exception e) {
@@ -151,7 +146,6 @@ public class ReservationService {
                 "Successfully created reservation",
                 dbReservation.getReservationId(),
                 dbTrip.getId()
-
         );
 
     }
@@ -194,31 +188,17 @@ public class ReservationService {
 
     }
 
-    public ReservationsConfirmationResponse cancelReservation(Integer reservationId) {
-        try{
-
+    @Transactional
+    public void cancelReservation(Integer reservationId) throws Exception {
+        try {
             reservationRepository.deleteReservationByReservationId(reservationId);
-
-            if(reservationRepository.existsReservationByReservationId(reservationId)){
-                return new ReservationsConfirmationResponse(
-                        "FAILED",
-                        "Failed to delete, something went wrong"
-                );
-            }
-            else {
-                return new ReservationsConfirmationResponse(
-                        "SUCCESS",
-                        "Canceled"
-                );
-            }
-
+            // if (reservationRepository.existsReservationByReservationId(reservationId)) {
+            //     throw new Exception("Failed to delete, something went wrong");
+            // }
         }
-        catch (Exception e ){
-            return new ReservationsConfirmationResponse(
-                    "FAILED",
-                    "Something went wrong"
-            );
+        catch (Exception e ) {
+            e.printStackTrace();
+            throw new Exception("Something went wrong");
         }
-
     }
 }

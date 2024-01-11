@@ -21,10 +21,7 @@ public class ReservationController {
 
     @PostMapping("/create")
     public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) throws Exception {
-
         ReservationsConfirmationResponse responseBody = reservationService.createReservation(body);
-
-
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
@@ -45,15 +42,11 @@ public class ReservationController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @GetMapping("/cancel/{reservation_id}")
-    public ResponseEntity<ReservationsConfirmationResponse> cancelReservation(@PathVariable(name = "reservation_jd") Integer reservation_id){
-
-        ReservationsConfirmationResponse responseBody = reservationService.cancelReservation(reservation_id);
-
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    @DeleteMapping("/cancel/{reservation_id}")
+    public ResponseEntity<Void> cancelReservation(@PathVariable Integer reservation_id) throws Exception {
+        reservationService.cancelReservation(reservation_id);
+        return ResponseEntity.noContent().build();
 
     }
-
-
 
 }
