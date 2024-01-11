@@ -1,5 +1,7 @@
 package com.nik.tripfinder.payloads.responses;
 
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ReservationsConfirmationResponse extends GenericResponse{
@@ -9,12 +11,12 @@ public class ReservationsConfirmationResponse extends GenericResponse{
     @JsonProperty("trip_id")
     private Long tripId;
 
-    public ReservationsConfirmationResponse(String status, String message) {
-        super(status, message);
+    public ReservationsConfirmationResponse(String status, String message, HttpStatus statusCode) {
+        super(status, message, statusCode);
     }
 
-    public ReservationsConfirmationResponse(String status, String message, Integer reservationId, Long tripId) {
-        super(status, message);
+    public ReservationsConfirmationResponse(String status, String message, HttpStatus statusCode, Integer reservationId, Long tripId) {
+        super(status, message, statusCode);
         this.reservationId = reservationId;
         this.tripId = tripId;
     }

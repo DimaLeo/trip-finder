@@ -15,6 +15,8 @@ import com.nik.tripfinder.repositories.TripsRepository;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -103,7 +105,11 @@ public class ReservationService {
         try {
             dbTrip = retrieveReservationTrip(body.getTripId());
             if (dbTrip == null) {
-                throw new Exception("Something went wrong, trip does not exist");
+                return new ReservationsConfirmationResponse(
+                    "FAILURE",
+                    "Trip does not exist",
+                    HttpStatus.NOT_FOUND
+                );
             }
         }
         catch (Exception e) {
@@ -116,7 +122,7 @@ public class ReservationService {
             throw new Exception("Failed to check reservation existence in db");
         }
 
-        if (dbReservation!=null){
+        if (dbReservation != null){
             throw new Exception("Trip already reserved by the user");
         }
 
@@ -124,7 +130,11 @@ public class ReservationService {
             Long takenSlots = countTripReservations(dbTrip.getId());
             System.out.println(takenSlots);
             if(dbTrip.getMaxParticipants() <= takenSlots){
-                throw new Exception("No available slots for this trip");
+                return new ReservationsConfirmationResponse(
+                    "FAILURE",
+                    "No available slots for this trip",
+                    HttpStatus.GONE
+                );
             }
 
         }
@@ -144,6 +154,7 @@ public class ReservationService {
         return new ReservationsConfirmationResponse(
                 "SUCCESS",
                 "Successfully created reservation",
+                HttpStatus.CREATED,
                 dbReservation.getReservationId(),
                 dbTrip.getId()
         );
