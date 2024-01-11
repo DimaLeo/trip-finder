@@ -45,7 +45,7 @@ public class ReservationController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @PostMapping("/cancel/{reservation_id}")
+    @GetMapping("/cancel/{reservation_id}")
     public ResponseEntity<ReservationsConfirmationResponse> cancelReservation(@PathVariable(name = "reservation_jd") Integer reservation_id){
 
         ReservationsConfirmationResponse responseBody = reservationService.cancelReservation(reservation_id);
