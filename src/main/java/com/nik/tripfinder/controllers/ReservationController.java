@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/reservation")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -18,7 +19,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/create-reservation")
+    @PostMapping("/create")
     public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) throws Exception {
 
         ReservationsConfirmationResponse responseBody = reservationService.createReservation(body);
@@ -27,7 +28,7 @@ public class ReservationController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @GetMapping("/trip-reservations/{trip_id}")
+    @GetMapping("/trip/{trip_id}")
     public ResponseEntity<TripReservationsResponse> getTripReservations(@PathVariable(name = "trip_id") Long trip_id) {
 
         TripReservationsResponse responseBody = reservationService.getTripReservations(trip_id);
@@ -36,12 +37,21 @@ public class ReservationController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @GetMapping("/customer-reservations/{customer_id}")
+    @GetMapping("/customer/{customer_id}")
     public ResponseEntity<CustomerReservationsResponse> getCustomerReservations(@PathVariable(name = "customer_id") Integer customer_id) {
 
         CustomerReservationsResponse responseBody = reservationService.getCustomerReservations(customer_id);
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @PostMapping("/cancel/{reservation_id}")
+    public ResponseEntity<ReservationsConfirmationResponse> cancelReservation(@PathVariable(name = "reservation_jd") Integer reservation_id){
+
+        ReservationsConfirmationResponse responseBody = reservationService.cancelReservation(reservation_id);
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+
     }
 
 

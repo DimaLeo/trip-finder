@@ -191,5 +191,34 @@ public class ReservationService {
                 "Reservations successfully retrieved",
                 reservationsList);
 
+
+    }
+
+    public ReservationsConfirmationResponse cancelReservation(Integer reservationId) {
+        try{
+
+            reservationRepository.deleteReservationByReservationId(reservationId);
+
+            if(reservationRepository.existsReservationByReservationId(reservationId)){
+                return new ReservationsConfirmationResponse(
+                        "FAILED",
+                        "Failed to delete, something went wrong"
+                );
+            }
+            else {
+                return new ReservationsConfirmationResponse(
+                        "SUCCESS",
+                        "Canceled"
+                );
+            }
+
+        }
+        catch (Exception e ){
+            return new ReservationsConfirmationResponse(
+                    "FAILED",
+                    "Something went wrong"
+            );
+        }
+
     }
 }
