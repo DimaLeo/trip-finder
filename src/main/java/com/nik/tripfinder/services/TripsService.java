@@ -13,7 +13,6 @@ import com.nik.tripfinder.repositories.TripsRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -90,6 +89,7 @@ public class TripsService {
         List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
 
         for (TripDTO trip: trips){
+            trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
             if (!reservations.isEmpty()) {
                 for (Reservation r: reservations) {
                     if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
@@ -98,8 +98,6 @@ public class TripsService {
                         break;
                     }
                 }
-            } else {
-                break;
             }
         }
 

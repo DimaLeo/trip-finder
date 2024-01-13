@@ -22,6 +22,9 @@ public class TripDTO{
         @Nullable
         @JsonProperty("reservation_id")
         private Integer reservationId;
+        @Nullable
+        @JsonProperty("current_participants")
+        private Integer currentParticipants;
 
         public TripDTO(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants, MinimalAgencyDTO agency) {
                 this.id = id;
@@ -73,5 +76,13 @@ public class TripDTO{
         @Nullable
         public Integer getReservationId() {
                 return reservationId;
+        }
+
+        public Integer getCurrentParticipants() {
+                return currentParticipants;
+        }
+
+        public void setCurrentParticipants(Integer currentParticipants) {
+                this.currentParticipants = currentParticipants;
         }
 }

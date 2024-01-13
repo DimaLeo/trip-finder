@@ -1,5 +1,6 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
@@ -16,7 +17,6 @@ import com.nik.tripfinder.repositories.TripsRepository;
 import jakarta.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class ReservationService {
 
 
 
-    private Long countTripReservations(Long id) {
+    private Integer countTripReservations(Long id) {
         return reservationRepository.countByTripId(id);
     }
 
@@ -127,9 +127,8 @@ public class ReservationService {
         }
 
         try {
-            Long takenSlots = countTripReservations(dbTrip.getId());
-            System.out.println(takenSlots);
-            if(dbTrip.getMaxParticipants() <= takenSlots){
+            Integer currentReservations = countTripReservations(dbTrip.getId());
+            if(dbTrip.getMaxParticipants() <= currentReservations){
                 return new ReservationsConfirmationResponse(
                     "FAILURE",
                     "No available slots for this trip",
@@ -183,10 +182,19 @@ public class ReservationService {
         List<CustomerReservation> reservationsList = new ArrayList<>();
 
         for(Reservation r: reservations){
+
+            TripDTO tripDTO = tripDTOMapper.apply(r.getTrip());
+
+            Integer currentParticipants = reservationRepository.countByTripId(tripDTO.getId());
+
+            tripDTO.setCurrentParticipants(currentParticipants);
             reservationsList.add(
+
+
                     new CustomerReservation(
                             r.getReservationId(),
-                            tripDTOMapper.apply(r.getTrip())
+                            tripDTO
+
                     )
             );
         }
