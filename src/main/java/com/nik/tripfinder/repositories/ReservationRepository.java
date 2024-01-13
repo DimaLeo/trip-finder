@@ -1,5 +1,6 @@
 package com.nik.tripfinder.repositories;
 
+import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 

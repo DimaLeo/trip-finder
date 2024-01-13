@@ -1,5 +1,7 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.models.Customer;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -30,12 +33,14 @@ public class ReservationService {
     private final TripsRepository tripsRepository;
     private final ReservationRepository reservationRepository;
     private final TripDTOMapper tripDTOMapper;
+    private final CustomerDTOMapper customerDTOMapper;
 
-    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository, TripDTOMapper tripDTOMapper) {
+    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository, TripDTOMapper tripDTOMapper, CustomerDTOMapper customerDTOMapper) {
         this.customersRepository = customersRepository;
         this.tripsRepository = tripsRepository;
         this.reservationRepository = reservationRepository;
         this.tripDTOMapper = tripDTOMapper;
+        this.customerDTOMapper = customerDTOMapper;
     }
 
     private Customer retrieveReservationCustomer(Integer customerId){
@@ -164,6 +169,9 @@ public class ReservationService {
 
         List<Reservation> reservations = reservationRepository.findReservationsByTripId(tripId);
         List<Integer> listOfId = new ArrayList<>();
+        List<CustomerDTO> customers = reservations.
+                stream()
+                .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
 
         for(Reservation r: reservations){
             listOfId.add(r.getReservationId());
@@ -172,7 +180,8 @@ public class ReservationService {
         return new TripReservationsResponse(
                 "SUCCESS",
                 "Reservations successfully retrieved",
-                listOfId);
+                listOfId,
+                customers);
 
     }
 
