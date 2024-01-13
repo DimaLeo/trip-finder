@@ -3,6 +3,7 @@ package com.nik.tripfinder.services;
 import com.nik.tripfinder.DTO.AgencyDTO.AgencyDTOMapper;
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.DTO.UserDTO.UserDTOMapper;
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.User;
@@ -16,6 +17,7 @@ import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.CustomersRepository;
 import com.nik.tripfinder.repositories.UserRepository;
 import com.nik.tripfinder.util.Validator;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +46,7 @@ public class AuthService {
         this.encoder = new BCryptPasswordEncoder();
     }
 
-    public AgencyResponse registerAgency(NewAgencyRequest newAgencyRequest) {
+    public AgencyResponse registerAgency(NewAgencyRequest newAgencyRequest) throws GeneralException {
         Optional<User> existingUser;
         Optional<Agency> existingAgency;
 
@@ -53,42 +55,25 @@ public class AuthService {
                     .findUserByUsername(newAgencyRequest.getUsername());
 
             if(existingUser.isPresent()){
-                return new AgencyResponse(
-                        "FAILED",
-                        "User already exists"
-                );
+                throw new GeneralException("User with the specified username already exists", HttpStatus.CONFLICT);
             }
 
-        }
-        catch (Exception e){
-            return new AgencyResponse(
-                    "FAILED",
-                    "Failed to retrieve user from db.\n" +
-                            "message : "+ e.getMessage()
-            );
-
-        }
-
-        try{
             existingAgency = agenciesRepository
                     .findAgencyByBrandNameOrTaxCode(
                             newAgencyRequest.getBrandName(),
                             newAgencyRequest.getTaxCode());
 
             if(existingAgency.isPresent()){
-                return new AgencyResponse(
-                        "FAILED",
-                        "Agency already exists"
-                );
+                throw new GeneralException("Agency with the specified brand name already exists", HttpStatus.CONFLICT);
             }
 
         }
-        catch (Exception e){
-            return new AgencyResponse(
-                    "FAILED",
-                    "Failed to retrieve agency from db.\n" +
-                            "message : "+ e.getMessage()
-            );
+        catch (GeneralException e){
+            if(!e.getStatus().equals(HttpStatus.CONFLICT)){
+                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            else throw e;
+
         }
 
         return registerAgencyUser(newAgencyRequest);
@@ -97,59 +82,44 @@ public class AuthService {
     }
 
 
-    public CustomerResponse registerCustomer(NewCustomerRequest newCustomerRequest) {
+    public CustomerResponse registerCustomer(NewCustomerRequest newCustomerRequest) throws GeneralException{
 
         Optional<User> existingUser;
         Optional<Customer> existingCustomer;
 
+
+
         try{
+
             existingUser = userRepository
                     .findUserByUsername(newCustomerRequest.getUsername());
 
             if(existingUser.isPresent()){
-                return new CustomerResponse(
-                        "FAILED",
-                        "User already exists"
-                );
+                throw new GeneralException("User with the specified username already exists", HttpStatus.CONFLICT);
             }
 
-        }
-        catch (Exception e){
-            return new CustomerResponse(
-                    "FAILED",
-                    "Failed to retrieve user from db.\n" +
-                            "message : "+ e.getMessage()
-            );
-
-        }
-
-        try{
             existingCustomer = customersRepository
                     .findCustomerByEmailOrTaxCode(
                             newCustomerRequest.getEmail(),
                             newCustomerRequest.getTaxCode());
 
             if(existingCustomer.isPresent()){
-                return new CustomerResponse(
-                        "FAILED",
-                        "Customer already exists"
-                );
+                throw new GeneralException("Customer with the specified info already exists", HttpStatus.CONFLICT);
             }
 
         }
-        catch (Exception e){
-            return new CustomerResponse(
-                    "FAILED",
-                    "Failed to retrieve agency from db.\n" +
-                            "message : "+ e.getMessage()
-            );
+        catch (GeneralException e){
+            if(!e.getStatus().equals(HttpStatus.CONFLICT)){
+                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            else throw e;
         }
 
         return registerCustomerUser(newCustomerRequest);
 
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest body) {
+    public AuthenticationResponse authenticate(AuthenticationRequest body) throws GeneralException {
         String validationErrors = authRequestValidation(body);
 
         if(validationErrors.isEmpty()){
@@ -159,10 +129,8 @@ public class AuthService {
                 existingUser = userRepository.findUserByUsername(body.getUsername());
 
                 if(!existingUser.isPresent()){
-                    return new AuthenticationResponse(
-                            "FAILED",
-                            "User with username: "+ body.getUsername() + " does not exist."
-                    );
+
+                    throw new GeneralException("User with username: "+ body.getUsername() + " does not exist.", HttpStatus.UNAUTHORIZED);
                 }
 
                 User dbUser = existingUser.get();
@@ -178,11 +146,7 @@ public class AuthService {
                             secondary_id = optionalAgency.get().getId();
                         }
                         else {
-                            return new AuthenticationResponse(
-                                    "FAILED",
-                                    "No Agency or Customer found for provided username"
-                            );
-                        }
+                            throw new GeneralException("No Agency or Customer found for provided username", HttpStatus.UNAUTHORIZED);                        }
                     }
                     else{
                         Optional<Customer> optionalCustomer = customersRepository.findCustomerByUserId(dbUser.getId());
@@ -191,13 +155,8 @@ public class AuthService {
                             secondary_id = optionalCustomer.get().getCustomerId();
                         }
                         else {
-                            return new AuthenticationResponse(
-                                    "FAILED",
-                                    "No Agency or Customer found for provided username"
-                            );
-                        }
+                            throw new GeneralException("No Agency or Customer found for provided username", HttpStatus.UNAUTHORIZED);                        }
                     }
-
 
 
                     return new AuthenticationResponse(
@@ -208,31 +167,27 @@ public class AuthService {
                     );
                 }
                 else{
-                    return new AuthenticationResponse(
-                            "FAILED",
-                            "Wrong password."
-                    );
+                    throw new GeneralException("Wrong password", HttpStatus.UNAUTHORIZED);
+
                 }
             }
-            catch (Exception e){
-                return new AuthenticationResponse(
-                        "FAILED",
-                        "Failed to retrieve user from db.\n" +
-                                "message : "+ e.getMessage()
-                );
+            catch (GeneralException e){
+                if(e.getStatus().equals(HttpStatus.UNAUTHORIZED)){
+                    throw e;
+                }
+                else throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         else {
-            return new AuthenticationResponse(
-                    "FAILED",
+            throw new GeneralException(
                     "Validation Error.\n" +
-                            "message :\n"+
-                            validationErrors
-            );
+                    "message :\n"+ validationErrors,
+                    HttpStatus.BAD_REQUEST);
+
         }
     }
 
-    private AgencyResponse registerAgencyUser(NewAgencyRequest body){
+    private AgencyResponse registerAgencyUser(NewAgencyRequest body) throws GeneralException {
 
         String validationErrors = agencyValidation(body);
 
@@ -248,11 +203,8 @@ public class AuthService {
                 newUser = userRepository.save(newUser);
             }
             catch (Exception e){
-                return new AgencyResponse(
-                        "FAILED",
-                        "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
+                throw new GeneralException("Something went wrong",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             Agency newAgency = new Agency(
@@ -265,11 +217,9 @@ public class AuthService {
                 newAgency = agenciesRepository.save(newAgency);
             }
             catch (Exception e){
-                return new AgencyResponse(
-                        "FAILED",
-                        "Failed to insert agency to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
+
+                throw new GeneralException("Something went wrong",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             return new AgencyResponse(
@@ -279,18 +229,17 @@ public class AuthService {
             );
         }
         else{
-            return new AgencyResponse(
-                    "FAILED",
+            throw new GeneralException(
                     "Validation Error.\n" +
-                            "message :\n"+
-                            validationErrors
-            );
+                    "message :\n"+
+                    validationErrors,
+                    HttpStatus.BAD_REQUEST);
         }
 
 
 
     }
-    private CustomerResponse registerCustomerUser(NewCustomerRequest body){
+    private CustomerResponse registerCustomerUser(NewCustomerRequest body) throws GeneralException {
 
         String validationErrors = customerValidation(body);
 
@@ -306,11 +255,8 @@ public class AuthService {
                 newUser = userRepository.save(newUser);
             }
             catch (Exception e){
-                return new CustomerResponse(
-                        "FAILED",
-                        "Failed to insert user to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
+                throw new GeneralException("Something went wrong",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             Customer newCustomer = new Customer(
@@ -325,11 +271,8 @@ public class AuthService {
 
             }
             catch (Exception e){
-                return new CustomerResponse(
-                        "FAILED",
-                        "Failed to insert customer to the db.\n" +
-                                "message : "+ e.getMessage()
-                );
+                throw new GeneralException("Something went wrong",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             return new CustomerResponse(
@@ -339,12 +282,11 @@ public class AuthService {
             );
         }
         else{
-            return new CustomerResponse(
-                    "FAILED",
+            throw new GeneralException(
                     "Validation Error.\n" +
                             "message :\n"+
-                            validationErrors
-            );
+                            validationErrors,
+                    HttpStatus.BAD_REQUEST);
         }
 
 

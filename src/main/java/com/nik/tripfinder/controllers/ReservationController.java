@@ -19,11 +19,11 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) throws Exception {
-        ReservationsConfirmationResponse responseBody = reservationService.createReservation(body);
-        return new ResponseEntity<>(responseBody, responseBody.getStatusCode());
-    }
+//    @PostMapping("/create")
+//    public ResponseEntity<ReservationsConfirmationResponse> createReservation(@RequestBody NewReservationRequest body) throws Exception {
+//        ReservationsConfirmationResponse responseBody = reservationService.createReservation(body);
+//        return new ResponseEntity<>(responseBody, responseBody.getStatusCode());
+//    }
 
     @GetMapping("/trip/{trip_id}")
     public ResponseEntity<TripReservationsResponse> getTripReservations(@PathVariable(name = "trip_id") Long trip_id) {
