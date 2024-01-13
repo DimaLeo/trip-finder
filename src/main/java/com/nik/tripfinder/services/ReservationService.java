@@ -4,6 +4,7 @@ import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
@@ -43,7 +44,7 @@ public class ReservationService {
         this.customerDTOMapper = customerDTOMapper;
     }
 
-    private Customer retrieveReservationCustomer(Integer customerId){
+    private Customer retrieveReservationCustomer(Integer customerId) {
 
         Optional<Customer> customerOptional =
                 customersRepository.findById(customerId);
@@ -91,7 +92,7 @@ public class ReservationService {
         return reservationRepository.countByTripId(id);
     }
 
-    public ReservationsConfirmationResponse createReservation(NewReservationRequest body) throws Exception {
+    public ReservationsConfirmationResponse createReservation(NewReservationRequest body) throws GeneralException {
 
         Customer dbCustomer;
         Trip dbTrip;
@@ -100,58 +101,62 @@ public class ReservationService {
         try {
             dbCustomer = retrieveReservationCustomer(body.getCustomerId());
             if(dbCustomer == null) {
-                throw new Exception("Something went wrong, customer does not exist");
+                throw new GeneralException("Something went wrong, customer does not exist", HttpStatus.NOT_FOUND);
             }
         }
-        catch (Exception e) {
-            throw new Exception("Failed to retrieve customer from db");
+        catch (Exception e){
+            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.NOT_FOUND)){
+                throw e;
+            }
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         try {
             dbTrip = retrieveReservationTrip(body.getTripId());
             if (dbTrip == null) {
-                return new ReservationsConfirmationResponse(
-                    "FAILURE",
-                    "Trip does not exist",
-                    HttpStatus.NOT_FOUND
-                );
+                throw new GeneralException("The specified trip was not found", HttpStatus.NOT_FOUND);
             }
         }
-        catch (Exception e) {
-            throw new Exception("Failed to retrieve trip from db");
+        catch (Exception e){
+            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.NOT_FOUND)){
+                throw e;
+            }
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         try {
             dbReservation = retrieveReservation(dbCustomer.getUser().getId(), dbTrip.getId());
         }
         catch (Exception e) {
-            throw new Exception("Failed to check reservation existence in db");
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         if (dbReservation != null){
-            throw new Exception("Trip already reserved by the user");
+            throw new GeneralException("Trip already reserved by the user", HttpStatus.CONFLICT);
         }
 
         try {
             Integer currentReservations = countTripReservations(dbTrip.getId());
             if(dbTrip.getMaxParticipants() <= currentReservations){
-                return new ReservationsConfirmationResponse(
-                    "FAILURE",
-                    "No available slots for this trip",
-                    HttpStatus.GONE
-                );
+                throw new GeneralException("No available slots for this trip", HttpStatus.GONE);
             }
 
         }
         catch (Exception e) {
-            throw new Exception("Failed to retrieve available slots for the trip");
+            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.GONE)){
+             throw e;
+            }
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
+
         Reservation newReservation = new Reservation(dbCustomer,dbTrip);
 
         try {
             dbReservation = reservationRepository.save(newReservation);
         }
         catch (Exception e) {
-            throw new Exception("Failed to save reservation to db");
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
 
@@ -165,68 +170,82 @@ public class ReservationService {
 
     }
 
-    public TripReservationsResponse getTripReservations(Long tripId) {
+    public TripReservationsResponse getTripReservations(Long tripId) throws GeneralException {
 
-        List<Reservation> reservations = reservationRepository.findReservationsByTripId(tripId);
-        List<Integer> listOfId = new ArrayList<>();
-        List<CustomerDTO> customers = reservations.
-                stream()
-                .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
+        try {
+            List<Reservation> reservations = reservationRepository.findReservationsByTripId(tripId);
+            List<Integer> listOfId = new ArrayList<>();
+            List<CustomerDTO> customers = reservations.
+                    stream()
+                    .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
 
-        for(Reservation r: reservations){
-            listOfId.add(r.getReservationId());
+            for(Reservation r: reservations){
+                listOfId.add(r.getReservationId());
+            }
+
+            return new TripReservationsResponse(
+                    "SUCCESS",
+                    "Reservations successfully retrieved",
+                    listOfId,
+                    customers);
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
-        return new TripReservationsResponse(
-                "SUCCESS",
-                "Reservations successfully retrieved",
-                listOfId,
-                customers);
 
     }
 
-    public CustomerReservationsResponse getCustomerReservations(Integer customerId) {
+    public CustomerReservationsResponse getCustomerReservations(Integer customerId) throws GeneralException {
 
-        List<Reservation> reservations = reservationRepository.findReservationsByCustomerCustomerId(customerId);
-        List<CustomerReservation> reservationsList = new ArrayList<>();
+        try{
+            List<Reservation> reservations = reservationRepository.findReservationsByCustomerCustomerId(customerId);
+            List<CustomerReservation> reservationsList = new ArrayList<>();
 
-        for(Reservation r: reservations){
+            for(Reservation r: reservations){
 
-            TripDTO tripDTO = tripDTOMapper.apply(r.getTrip());
+                TripDTO tripDTO = tripDTOMapper.apply(r.getTrip());
 
-            Integer currentParticipants = reservationRepository.countByTripId(tripDTO.getId());
+                Integer currentParticipants = reservationRepository.countByTripId(tripDTO.getId());
 
-            tripDTO.setCurrentParticipants(currentParticipants);
-            reservationsList.add(
+                tripDTO.setCurrentParticipants(currentParticipants);
+                reservationsList.add(
 
 
-                    new CustomerReservation(
-                            r.getReservationId(),
-                            tripDTO
+                        new CustomerReservation(
+                                r.getReservationId(),
+                                tripDTO
 
-                    )
-            );
+                        )
+                );
+            }
+
+            return new CustomerReservationsResponse(
+                    "SUCCESS",
+                    "Reservations successfully retrieved",
+                    reservationsList);
+        }
+        catch (Exception e) {
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
-        return new CustomerReservationsResponse(
-                "SUCCESS",
-                "Reservations successfully retrieved",
-                reservationsList);
 
 
     }
 
     @Transactional
-    public void cancelReservation(Integer reservationId) throws Exception {
+    public void cancelReservation(Integer reservationId) throws GeneralException {
         try {
             reservationRepository.deleteReservationByReservationId(reservationId);
-            // if (reservationRepository.existsReservationByReservationId(reservationId)) {
-            //     throw new Exception("Failed to delete, something went wrong");
-            // }
+             if (reservationRepository.existsReservationByReservationId(reservationId)) {
+                 throw new GeneralException("something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+             }
         }
         catch (Exception e ) {
-            e.printStackTrace();
-            throw new Exception("Something went wrong");
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 }

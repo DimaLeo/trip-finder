@@ -1,5 +1,6 @@
 package com.nik.tripfinder.controllers;
 
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.services.CustomersService;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class CustomerController {
     }
 
     @GetMapping("/customer/{username}")
-    public ResponseEntity<CustomerResponse> retrieveCustomer(@PathVariable String username){
+    public ResponseEntity<CustomerResponse> retrieveCustomer(@PathVariable String username) throws GeneralException {
 
         CustomerResponse responseBody = customersService.retrieveCustomer(username);
 

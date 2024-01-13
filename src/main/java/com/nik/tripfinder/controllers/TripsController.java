@@ -1,6 +1,7 @@
 package com.nik.tripfinder.controllers;
 
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
 import com.nik.tripfinder.services.TripsService;
 
@@ -50,7 +51,7 @@ public class TripsController {
             @RequestParam(required = false) String destination,
             @RequestParam(required = false) String departureArea,
             @RequestParam(required = false) Integer agencyId,
-            @RequestParam(required = false) Integer customerId) throws Exception {
+            @RequestParam(required = false) Integer customerId) throws GeneralException {
 
         List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId, customerId);
 
@@ -59,20 +60,20 @@ public class TripsController {
 
     // GET /destinations: get the destinations of all the trips
     @GetMapping("/destinations")
-    public ResponseEntity<List<String>> getAllDestinations() throws Exception {
+    public ResponseEntity<List<String>> getAllDestinations() throws GeneralException {
         List<String> destinations = tripsService.getAllDestinations();
         return new ResponseEntity<>(destinations, HttpStatus.OK);
     }
 
     // GET /departure-areas: get the departure areas of all the trips
     @GetMapping("/departure-areas")
-    public ResponseEntity<List<String>> getAllDepartureAreas() throws Exception {
+    public ResponseEntity<List<String>> getAllDepartureAreas() throws GeneralException {
         List<String> departureAreas = tripsService.getAllDepartureAreas();
         return new ResponseEntity<>(departureAreas, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTrip(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Void> deleteTrip(@PathVariable Long id) throws GeneralException {
         tripsService.deleteTrip(id);
         return ResponseEntity.noContent().build();
     }

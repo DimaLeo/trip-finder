@@ -2,9 +2,11 @@ package com.nik.tripfinder.services;
 
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,7 +22,7 @@ public class CustomersService {
         this.customerDTOMapper = customerDTOMapper;
     }
 
-    public CustomerResponse retrieveCustomer(String username){
+    public CustomerResponse retrieveCustomer(String username) throws GeneralException {
 
         try {
             Optional<Customer> dbCustomer = customersRepository.findCustomerByUserUsername(username);
@@ -33,18 +35,18 @@ public class CustomersService {
                 );
             }
             else {
-                return new CustomerResponse(
-                        "FAILED",
-                        "Customer does not exist in db"
-                );
+
+                throw new GeneralException("Requested customer does not exist", HttpStatus.NOT_FOUND);
             }
         }
-        catch (Exception e){
-            return new CustomerResponse(
-                    "FAILED",
-                    "Could not retrieve customer from db.\n"+
-                            "message: "+e.getMessage()
-            );
+        catch (GeneralException e){
+
+            if(e.getStatus() == HttpStatus.NOT_FOUND){
+                throw e;
+            }
+            else{
+                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
 

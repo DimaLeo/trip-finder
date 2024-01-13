@@ -2,6 +2,7 @@ package com.nik.tripfinder.services;
 
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
@@ -15,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +35,7 @@ public class TripsService {
         this.tripDTOMapper = tripDTOMapper;
     }
 
-    public TripDTO save(NewTripRequest trip) throws Exception {
+    public TripDTO save(NewTripRequest trip) throws GeneralException {
 
         Agency dbAgency;
 
@@ -41,12 +43,15 @@ public class TripsService {
             Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
 
             if (!agencyOptional.isPresent()) {
-                throw new Exception("Failed to retrieve the agency from db.");
+                throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
             }
 
             dbAgency = agencyOptional.get();
         } catch (Exception e) {
-            throw new Exception("Failed while trying to retrieve agency info");
+            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
+                throw e;
+            }
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         try {
@@ -64,7 +69,7 @@ public class TripsService {
             return tripDTOMapper.apply(newTrip);
 
         } catch (Exception e) {
-            throw new Exception("Error while creating the new trip");
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,45 +79,63 @@ public class TripsService {
             String destination,
             String departureArea,
             Integer agencyId,
-            Integer customerId) {
+            Integer customerId) throws GeneralException {
 
-        List<TripDTO> trips =
-                tripDTOMapper.mapToDTOList(
-                        tripsRepository
-                                .findTripsWithOptionalParameters(
-                                        startDate,
-                                        endDate,
-                                        destination,
-                                        departureArea,
-                                        agencyId));
+        try{
+            List<TripDTO> trips =
+                    tripDTOMapper.mapToDTOList(
+                            tripsRepository
+                                    .findTripsWithOptionalParameters(
+                                            startDate,
+                                            endDate,
+                                            destination,
+                                            departureArea,
+                                            agencyId));
 
-        List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
+            List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
 
-        for (TripDTO trip: trips){
-            trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
-            if (!reservations.isEmpty()) {
-                for (Reservation r: reservations) {
-                    if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
-                        trip.setReservationId(r.getReservationId());
-                        reservations.remove(r);
-                        break;
+            for (TripDTO trip: trips){
+                trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
+                if (!reservations.isEmpty()) {
+                    for (Reservation r: reservations) {
+                        if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
+                            trip.setReservationId(r.getReservationId());
+                            reservations.remove(r);
+                            break;
+                        }
                     }
                 }
             }
+
+            return trips;
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return trips;
     }
 
-    public List<String> getAllDestinations() {
-        return tripsRepository.findAllDestinations();
+    public List<String> getAllDestinations() throws GeneralException {
+        try{
+            return tripsRepository.findAllDestinations();
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
-    public List<String> getAllDepartureAreas() {
-        return tripsRepository.findAllDepartureAreas();
+    public List<String> getAllDepartureAreas() throws GeneralException {
+        try{
+            return tripsRepository.findAllDepartureAreas();
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
-    public void deleteTrip(Long id) throws EntityNotFoundException {
+    public void deleteTrip(Long id) throws EntityNotFoundException, GeneralException {
         Optional<Trip> tripOptional = tripsRepository.findById(id);
         if (tripOptional.isPresent()) {
             List<Reservation> tripReservations = reservationRepository.findReservationsByTripId(id);
@@ -122,7 +145,7 @@ public class TripsService {
             Trip tripToDelete = tripOptional.get();
             tripsRepository.delete(tripToDelete);
         } else {
-            throw new EntityNotFoundException("Entity with id " + id + " not found");
+            throw new GeneralException("Entity with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
     }
 
