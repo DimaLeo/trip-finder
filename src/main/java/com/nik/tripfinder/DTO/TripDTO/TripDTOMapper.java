@@ -28,7 +28,8 @@ public class TripDTOMapper implements Function<Trip, TripDTO> {
                 trip.getTripSchedule(),
                 trip.getMaxParticipants(),
                 agencyDTOMapper.apply(trip.getAgency()),
-                trip.getReservationsNumber()
+                trip.getReservationsNumber(),
+                trip.getHasReservation()
         );
     }
 

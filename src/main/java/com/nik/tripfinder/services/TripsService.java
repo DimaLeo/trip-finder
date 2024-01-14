@@ -90,32 +90,27 @@ public class TripsService {
             Integer customerId) throws GeneralException {
 
         try{
-            List<TripDTO> trips =
-                    tripDTOMapper.mapToDTOList(
-                            tripsRepository
-                                    .findTripsWithOptionalParameters(
-                                            startDate,
-                                            endDate,
-                                            destination,
-                                            departureArea,
-                                            agencyId));
+            List<Trip> trips =
+                    tripsRepository
+                            .findTripsWithOptionalParameters(
+                                    startDate,
+                                    endDate,
+                                    destination,
+                                    departureArea,
+                                    agencyId);
 
-            List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
+            trips.forEach(trip -> trip.setHasReservation(
+                    trip.getReservations().stream().anyMatch(
+                            reservation ->
+                                    reservation.
+                                            getCustomer().
+                                            getCustomerId().equals(customerId))
+            ));
 
-            for (TripDTO trip: trips){
-                trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
-                if (!reservations.isEmpty()) {
-                    for (Reservation r: reservations) {
-                        if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
-                            trip.setReservationId(r.getReservationId());
-                            reservations.remove(r);
-                            break;
-                        }
-                    }
-                }
-            }
 
-            return trips;
+
+
+            return tripDTOMapper.mapToDTOList(trips);
         }
         catch (Exception e){
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);

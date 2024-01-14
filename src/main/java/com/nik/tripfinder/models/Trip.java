@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 @Entity
@@ -42,6 +43,12 @@ public class Trip {
     @Transient
     @JsonProperty("reservations_number")
     private Integer reservationsNumber;
+
+    @Transient
+    @Nullable
+    @JsonProperty("has_reservation")
+    private Boolean hasReservation;
+
 
     public Trip(Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
             Integer maxParticipants, Agency agency) {
@@ -110,5 +117,14 @@ public class Trip {
         } else {
             return 0;
         }
+    }
+
+    @Nullable
+    public Boolean getHasReservation() {
+        return hasReservation;
+    }
+
+    public void setHasReservation(@Nullable Boolean hasReservation) {
+        this.hasReservation = hasReservation;
     }
 }
