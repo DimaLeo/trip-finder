@@ -24,11 +24,10 @@ public class ReservationService {
     private final TripsRepository tripsRepository;
     private final ReservationRepository reservationRepository;
 
-    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository, CustomerDTOMapper customerDTOMapper) {
+    public ReservationService(CustomersRepository customersRepository, TripsRepository tripsRepository, ReservationRepository reservationRepository) {
         this.customersRepository = customersRepository;
         this.tripsRepository = tripsRepository;
         this.reservationRepository = reservationRepository;
-        this.customerDTOMapper = customerDTOMapper;
     }
 
     private Customer retrieveReservationCustomer(Integer customerId) {
