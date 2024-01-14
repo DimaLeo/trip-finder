@@ -51,12 +51,10 @@ public class TripsService {
             }
 
             // Check if the given agency id corresponds to an agency
-            Agency dbAgency;
             Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
             if (!agencyOptional.isPresent()) {
-                throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
+                throw new GeneralException("There is no agency with id " + trip.getAgencyId(), HttpStatus.CONFLICT);
             }
-            dbAgency = agencyOptional.get();
 
             // Create new trip and return it
             Trip newTrip = new Trip(startDate, endDate,
@@ -64,7 +62,7 @@ public class TripsService {
                     trip.getTrip().getDestination(),
                     trip.getTrip().getTripSchedule(),
                     trip.getTrip().getMaxParticipants(),
-                    dbAgency);
+                    agencyOptional.get());
             newTrip = tripsRepository.save(newTrip);
 
             return tripDTOMapper.apply(newTrip);

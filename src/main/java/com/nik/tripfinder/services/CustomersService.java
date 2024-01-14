@@ -2,13 +2,15 @@ package com.nik.tripfinder.services;
 
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
 import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
+import com.nik.tripfinder.DTO.ReservationDTO.ReservationDTO;
+import com.nik.tripfinder.DTO.ReservationDTO.ReservationDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Customer;
-import com.nik.tripfinder.payloads.responses.CustomerResponse;
 import com.nik.tripfinder.repositories.CustomersRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,41 +18,27 @@ public class CustomersService {
 
     private final CustomersRepository customersRepository;
     private final CustomerDTOMapper customerDTOMapper;
+    private final ReservationDTOMapper reservationDTOMapper;
 
-    public CustomersService(CustomersRepository customersRepository, CustomerDTOMapper customerDTOMapper) {
+    public CustomersService(CustomersRepository customersRepository, CustomerDTOMapper customerDTOMapper, ReservationDTOMapper reservationDTOMapper) {
         this.customersRepository = customersRepository;
         this.customerDTOMapper = customerDTOMapper;
+        this.reservationDTOMapper = reservationDTOMapper;
     }
 
-    public CustomerResponse retrieveCustomer(String username) throws GeneralException {
-
-        try {
-            Optional<Customer> dbCustomer = customersRepository.findCustomerByUserUsername(username);
-
-            if(dbCustomer.isPresent()){
-                return new CustomerResponse(
-                        "SUCCESS",
-                        "Retrieved customer",
-                        customerDTOMapper.apply(dbCustomer.get())
-                );
-            }
-            else {
-
-                throw new GeneralException("Requested customer does not exist", HttpStatus.NOT_FOUND);
-            }
+    public CustomerDTO getCustomerById(Integer id) throws GeneralException {
+        Optional<Customer> dbCustomer = customersRepository.findById(id);
+        if (dbCustomer.isPresent()) {
+                return customerDTOMapper.apply(dbCustomer.get());
+        } else {
+            throw new GeneralException("There is no customer with id " + id, HttpStatus.BAD_REQUEST);
         }
-        catch (GeneralException e){
-
-            if(e.getStatus() == HttpStatus.NOT_FOUND){
-                throw e;
-            }
-            else{
-                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-
-
     }
 
+    public List<ReservationDTO> getReservations(Integer customerId) throws GeneralException {
+        Optional<Customer> optionalCustomer = customersRepository.findById(customerId);
+        if (optionalCustomer.isPresent()) {
+            return reservationDTOMapper.mapToDTOList(optionalCustomer.get().getReservations());
+        } else throw new GeneralException("There is no customer with id " + customerId, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
 import org.springframework.lang.Nullable;
 
-public class TripDTO{
+public class TripDTO {
         private Long id;
         @JsonProperty("start_date")
         private Long startDate;
