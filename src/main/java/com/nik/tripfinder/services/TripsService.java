@@ -28,8 +28,9 @@ public class TripsService {
     private final ReservationRepository reservationRepository;
     private final TripDTOMapper tripDTOMapper;
 
-    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository, ReservationRepository reservationRepository,
-                        TripDTOMapper tripDTOMapper) {
+    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
+            ReservationRepository reservationRepository,
+            TripDTOMapper tripDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
         this.reservationRepository = reservationRepository;
@@ -37,48 +38,41 @@ public class TripsService {
     }
 
     public TripDTO save(NewTripRequest trip) throws GeneralException {
-
-        Long startDate = Timestamp.getMidnightTimestamp(trip.getTrip().getStartDate());
-        Long endDate = Timestamp.getMidnightTimestamp(trip.getTrip().getEndDate());
-
-        // Check if input timestamps are correct
-        if (startDate > endDate) throw new GeneralException("End date should be after start date", HttpStatus.BAD_REQUEST);
-        if (Timestamp.todaysTimestamp() > startDate) throw new GeneralException("Start date cannot be before today", HttpStatus.BAD_REQUEST);
- 
-        Agency dbAgency;
         try {
-            Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
+            Long startDate = Timestamp.getMidnightTimestamp(trip.getTrip().getStartDate());
+            Long endDate = Timestamp.getMidnightTimestamp(trip.getTrip().getEndDate());
 
+            // Check if input timestamps are correct
+            if (startDate > endDate) {
+                throw new GeneralException("End date should be after start date", HttpStatus.BAD_REQUEST);
+            }
+            if (Timestamp.todaysTimestamp() > startDate) {
+                throw new GeneralException("Start date cannot be before today", HttpStatus.BAD_REQUEST);
+            }
+
+            // Check if the given agency id corresponds to an agency
+            Agency dbAgency;
+            Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
             if (!agencyOptional.isPresent()) {
                 throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
             }
-
             dbAgency = agencyOptional.get();
+
+            // Create new trip and return it
+            Trip newTrip = new Trip(startDate, endDate,
+                    trip.getTrip().getDepartureArea(),
+                    trip.getTrip().getDestination(),
+                    trip.getTrip().getTripSchedule(),
+                    trip.getTrip().getMaxParticipants(),
+                    dbAgency);
+            newTrip = tripsRepository.save(newTrip);
+
+            return tripDTOMapper.apply(newTrip);
         } catch (Exception e) {
-            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
+            if (e instanceof GeneralException)
                 throw e;
-            }
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
-
-        // try {
-        //     Trip newTrip = new Trip(
-        //             trip.getStartDate(),
-        //             trip.getEndDate(),
-        //             trip.getDepartureArea(),
-        //             trip.getDestination(),
-        //             trip.getTripSchedule(),
-        //             trip.getMaxParticipants(),
-        //             dbAgency);
-
-        //     newTrip = tripsRepository.save(newTrip);
-
-        //     return tripDTOMapper.apply(newTrip);
-
-        // } catch (Exception e) {
-        //     throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
     }
 
     public List<TripDTO> findTripsWithOptionalParameters(
@@ -89,23 +83,22 @@ public class TripsService {
             Integer agencyId,
             Integer customerId) throws GeneralException {
 
-        try{
-            List<TripDTO> trips =
-                    tripDTOMapper.mapToDTOList(
-                            tripsRepository
-                                    .findTripsWithOptionalParameters(
-                                            startDate,
-                                            endDate,
-                                            destination,
-                                            departureArea,
-                                            agencyId));
+        try {
+            List<TripDTO> trips = tripDTOMapper.mapToDTOList(
+                    tripsRepository
+                            .findTripsWithOptionalParameters(
+                                    startDate,
+                                    endDate,
+                                    destination,
+                                    departureArea,
+                                    agencyId));
 
-            List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
+            List<Reservation> reservations = reservationRepository.findReservationsByCustomerCustomerId(customerId);
 
-            for (TripDTO trip: trips){
+            for (TripDTO trip : trips) {
                 trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
                 if (!reservations.isEmpty()) {
-                    for (Reservation r: reservations) {
+                    for (Reservation r : reservations) {
                         if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
                             trip.setReservationId(r.getReservationId());
                             reservations.remove(r);
@@ -116,28 +109,25 @@ public class TripsService {
             }
 
             return trips;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     public List<String> getAllDestinations() throws GeneralException {
-        try{
+        try {
             return tripsRepository.findAllDestinations();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     public List<String> getAllDepartureAreas() throws GeneralException {
-        try{
+        try {
             return tripsRepository.findAllDepartureAreas();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
