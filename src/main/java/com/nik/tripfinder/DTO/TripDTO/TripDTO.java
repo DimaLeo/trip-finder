@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
 import org.springframework.lang.Nullable;
 
-public class TripDTO{
+public class TripDTO {
         private Long id;
         @JsonProperty("start_date")
         private Long startDate;
@@ -20,13 +20,12 @@ public class TripDTO{
         @JsonProperty("agency")
         private MinimalAgencyDTO agency;
         @Nullable
-        @JsonProperty("reservation_id")
-        private Integer reservationId;
-        @Nullable
-        @JsonProperty("current_participants")
+        @JsonProperty("has_reservation")
+        private Boolean hasReservation;
+        @JsonProperty("reservations_number")
         private Integer currentParticipants;
 
-        public TripDTO(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants, MinimalAgencyDTO agency) {
+        public TripDTO(Long id, Long startDate, Long endDate, String departureArea, String destination, String tripSchedule, Integer maxParticipants, MinimalAgencyDTO agency, Integer currentParticipants, Boolean hasReservation) {
                 this.id = id;
                 this.startDate = startDate;
                 this.endDate = endDate;
@@ -35,10 +34,8 @@ public class TripDTO{
                 this.tripSchedule = tripSchedule;
                 this.maxParticipants = maxParticipants;
                 this.agency = agency;
-        }
-
-        public void setReservationId(Integer reservationId) {
-                this.reservationId = reservationId;
+                this.currentParticipants = currentParticipants;
+                this.hasReservation = hasReservation;
         }
 
         public Long getId() {
@@ -74,8 +71,8 @@ public class TripDTO{
         }
 
         @Nullable
-        public Integer getReservationId() {
-                return reservationId;
+        public Boolean getHasReservation() {
+                return hasReservation;
         }
 
         public Integer getCurrentParticipants() {

@@ -1,5 +1,11 @@
 package com.nik.tripfinder.models;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +23,7 @@ public class Trip {
     private String departureArea;
     @Column(nullable = false)
     private String destination;
+    // medium text because the schedule is big and cannot fit in a varchar column
     @Column(name = "trip_schedule", columnDefinition = "MEDIUMTEXT", nullable = false)
     private String tripSchedule;
     @Column(name = "max_participants", nullable = false)
@@ -24,7 +31,24 @@ public class Trip {
 
     @ManyToOne
     @JoinColumn(name = "agency_id")
+    // Add the agency to the returned Trip Entity
     private Agency agency;
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
+    // Don't add it to the returned Trip Entity
+    @JsonBackReference
+    private List<Reservation> reservations;
+
+    // It will not be stored in the database
+    @Transient
+    @JsonProperty("reservations_number")
+    private Integer reservationsNumber;
+
+    @Transient
+    @Nullable
+    @JsonProperty("has_reservation")
+    private Boolean hasReservation;
+
 
     public Trip(Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
             Integer maxParticipants, Agency agency) {
@@ -35,6 +59,16 @@ public class Trip {
         this.tripSchedule = tripSchedule;
         this.maxParticipants = maxParticipants;
         this.agency = agency;
+    }
+
+    public Trip(Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
+            Integer maxParticipants) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.departureArea = departureArea;
+        this.destination = destination;
+        this.tripSchedule = tripSchedule;
+        this.maxParticipants = maxParticipants;
     }
 
     public Trip() {
@@ -71,5 +105,26 @@ public class Trip {
 
     public Integer getMaxParticipants() {
         return maxParticipants;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public Integer getReservationsNumber() {
+        if (reservations != null) {
+            return reservations.size();
+        } else {
+            return 0;
+        }
+    }
+
+    @Nullable
+    public Boolean getHasReservation() {
+        return hasReservation;
+    }
+
+    public void setHasReservation(@Nullable Boolean hasReservation) {
+        this.hasReservation = hasReservation;
     }
 }

@@ -1,5 +1,7 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
@@ -7,12 +9,15 @@ import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
+import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
+import com.nik.tripfinder.util.Timestamp;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,51 +29,50 @@ public class TripsService {
 
     private final TripsRepository tripsRepository;
     private final AgenciesRepository agenciesRepository;
-    private final ReservationRepository reservationRepository;
     private final TripDTOMapper tripDTOMapper;
+    private final CustomerDTOMapper customerDTOMapper;
 
-    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository, ReservationRepository reservationRepository,
-                        TripDTOMapper tripDTOMapper) {
+    public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
+                        TripDTOMapper tripDTOMapper, CustomerDTOMapper customerDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
-        this.reservationRepository = reservationRepository;
         this.tripDTOMapper = tripDTOMapper;
+        this.customerDTOMapper = customerDTOMapper;
+
     }
 
     public TripDTO save(NewTripRequest trip) throws GeneralException {
-
-        Agency dbAgency;
-
         try {
+            Long startDate = Timestamp.getMidnightTimestamp(trip.getTrip().getStartDate());
+            Long endDate = Timestamp.getMidnightTimestamp(trip.getTrip().getEndDate());
+
+            // Check if input timestamps are correct
+            if (startDate > endDate) {
+                throw new GeneralException("End date should be after start date", HttpStatus.BAD_REQUEST);
+            }
+            if (Timestamp.todaysTimestamp() > startDate) {
+                throw new GeneralException("Start date cannot be before today", HttpStatus.BAD_REQUEST);
+            }
+
+            // Check if the given agency id corresponds to an agency
             Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
-
             if (!agencyOptional.isPresent()) {
-                throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
+                throw new GeneralException("There is no agency with id " + trip.getAgencyId(), HttpStatus.CONFLICT);
             }
 
-            dbAgency = agencyOptional.get();
-        } catch (Exception e) {
-            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
-                throw e;
-            }
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        try {
-            Trip newTrip = new Trip(
-                    trip.getStartDate(),
-                    trip.getEndDate(),
-                    trip.getDepartureArea(),
-                    trip.getDestination(),
-                    trip.getTripSchedule(),
-                    trip.getMaxParticipants(),
-                    dbAgency);
-
+            // Create new trip and return it
+            Trip newTrip = new Trip(startDate, endDate,
+                    trip.getTrip().getDepartureArea(),
+                    trip.getTrip().getDestination(),
+                    trip.getTrip().getTripSchedule(),
+                    trip.getTrip().getMaxParticipants(),
+                    agencyOptional.get());
             newTrip = tripsRepository.save(newTrip);
 
             return tripDTOMapper.apply(newTrip);
-
         } catch (Exception e) {
+            if (e instanceof GeneralException)
+                throw e;
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -81,72 +85,89 @@ public class TripsService {
             Integer agencyId,
             Integer customerId) throws GeneralException {
 
-        try{
-            List<TripDTO> trips =
-                    tripDTOMapper.mapToDTOList(
-                            tripsRepository
-                                    .findTripsWithOptionalParameters(
-                                            startDate,
-                                            endDate,
-                                            destination,
-                                            departureArea,
-                                            agencyId));
+        try {
+            List<Trip> trips =
+                    tripsRepository
+                            .findTripsWithOptionalParameters(
+                                    startDate,
+                                    endDate,
+                                    destination,
+                                    departureArea,
+                                    agencyId);
 
-            List<Reservation> reservations= reservationRepository.findReservationsByCustomerCustomerId(customerId);
+            trips.forEach(trip -> trip.setHasReservation(
+                    trip.getReservations().stream().anyMatch(
+                            reservation ->
+                                    reservation.
+                                            getCustomer().
+                                            getCustomerId().equals(customerId))
+            ));
 
-            for (TripDTO trip: trips){
-                trip.setCurrentParticipants(reservationRepository.countByTripId(trip.getId()));
-                if (!reservations.isEmpty()) {
-                    for (Reservation r: reservations) {
-                        if (r.getCustomer().getCustomerId() == customerId && r.getTrip().getId() == trip.getId()) {
-                            trip.setReservationId(r.getReservationId());
-                            reservations.remove(r);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return trips;
-        }
-        catch (Exception e){
+            return tripDTOMapper.mapToDTOList(trips);
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     public List<String> getAllDestinations() throws GeneralException {
-        try{
+        try {
             return tripsRepository.findAllDestinations();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
     public List<String> getAllDepartureAreas() throws GeneralException {
-        try{
+        try {
             return tripsRepository.findAllDepartureAreas();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    public void deleteTrip(Long id) throws EntityNotFoundException, GeneralException {
+    public void deleteTrip(Long id) throws GeneralException {
         Optional<Trip> tripOptional = tripsRepository.findById(id);
         if (tripOptional.isPresent()) {
-            List<Reservation> tripReservations = reservationRepository.findReservationsByTripId(id);
-            for (Reservation reservation : tripReservations) {
-                reservationRepository.delete(reservation);
-            }
-            Trip tripToDelete = tripOptional.get();
-            tripsRepository.delete(tripToDelete);
+            tripsRepository.delete(tripOptional.get());
         } else {
-            throw new GeneralException("Entity with id " + id + " not found", HttpStatus.NOT_FOUND);
+            throw new GeneralException("There is not trip with id" + id, HttpStatus.NOT_FOUND);
         }
     }
+
+    public TripReservationsResponse getTripReservations(Long tripId) throws GeneralException {
+
+        try {
+            Optional<Trip> optionalTrip = tripsRepository.findById(tripId);
+
+            if(optionalTrip.isPresent()){
+                List<Integer> listOfId = new ArrayList<>();
+                List<CustomerDTO> customers = optionalTrip.get().getReservations()
+                        .stream()
+                        .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
+
+                for(Reservation r: optionalTrip.get().getReservations()){
+                    listOfId.add(r.getReservationId());
+                }
+
+                return new TripReservationsResponse(
+                        "SUCCESS",
+                        "Reservations successfully retrieved",
+                        listOfId,
+                        customers);
+            }
+            else throw new Exception();
+
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+
+    }
+
 
 }

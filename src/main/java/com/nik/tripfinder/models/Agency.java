@@ -1,6 +1,9 @@
 package com.nik.tripfinder.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "agencies")
@@ -19,6 +22,10 @@ public class Agency {
     @Column(name = "brand_name", unique = true)
     private String brandName;
     private String owner;
+
+    @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Trip> trips;
 
     public Agency(User user, String taxCode, String brandName, String owner) {
         this.user = user;
@@ -54,5 +61,9 @@ public class Agency {
 
     public String getOwner() {
         return this.owner;
+    }
+
+    public List<Trip> getTrips() {
+        return trips;
     }
 }

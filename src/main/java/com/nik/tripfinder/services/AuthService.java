@@ -20,7 +20,6 @@ import com.nik.tripfinder.util.Validator;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -77,8 +76,6 @@ public class AuthService {
         }
 
         return registerAgencyUser(newAgencyRequest);
-
-
     }
 
 
@@ -90,7 +87,6 @@ public class AuthService {
 
 
         try{
-
             existingUser = userRepository
                     .findUserByUsername(newCustomerRequest.getUsername());
 
