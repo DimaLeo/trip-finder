@@ -195,7 +195,8 @@ public class AuthService {
             return new AgencyResponse(
                     "SUCCESS",
                     "User successfully created",
-                    agencyDTOMapper.apply(newAgency));
+                    agencyDTOMapper.apply(newAgency),
+                    newAgency.getId());
         } else {
             throw new GeneralException(
                     "Validation Error.\n" +
@@ -234,7 +235,6 @@ public class AuthService {
 
             try {
                 newCustomer = customersRepository.save(newCustomer);
-
             } catch (Exception e) {
                 throw new GeneralException("Something went wrong",
                         HttpStatus.INTERNAL_SERVER_ERROR);
@@ -243,7 +243,8 @@ public class AuthService {
             return new CustomerResponse(
                     "SUCCESS",
                     "User successfully created",
-                    customerDTOMapper.apply(newCustomer));
+                    customerDTOMapper.apply(newCustomer),
+                    newCustomer.getCustomerId());
         } else {
             throw new GeneralException(
                     "Validation Error.\n" +

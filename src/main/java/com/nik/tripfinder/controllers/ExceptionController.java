@@ -1,6 +1,7 @@
 package com.nik.tripfinder.controllers;
 
 import com.nik.tripfinder.exceptions.GeneralException;
+import com.nik.tripfinder.payloads.responses.ExceptionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,8 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionController {
 
     @ExceptionHandler(GeneralException.class)
-    public ResponseEntity<String> handleCustomException(GeneralException ex) {
-        return new ResponseEntity<>(ex.getMessage(), ex.getStatus());
+    public ResponseEntity<ExceptionResponse> handleCustomException(GeneralException ex) {
+        ExceptionResponse errorResponse = new ExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
 }
