@@ -1,5 +1,7 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTO;
+import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
@@ -7,6 +9,7 @@ import com.nik.tripfinder.models.Agency;
 import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
+import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
@@ -14,6 +17,7 @@ import com.nik.tripfinder.util.Timestamp;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,16 +29,16 @@ public class TripsService {
 
     private final TripsRepository tripsRepository;
     private final AgenciesRepository agenciesRepository;
-    private final ReservationRepository reservationRepository;
     private final TripDTOMapper tripDTOMapper;
+    private final CustomerDTOMapper customerDTOMapper;
 
     public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
-                        ReservationRepository reservationRepository,
-                        TripDTOMapper tripDTOMapper) {
+                        TripDTOMapper tripDTOMapper, CustomerDTOMapper customerDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
-        this.reservationRepository = reservationRepository;
         this.tripDTOMapper = tripDTOMapper;
+        this.customerDTOMapper = customerDTOMapper;
+
     }
 
     public TripDTO save(NewTripRequest trip) throws GeneralException {
@@ -132,5 +136,38 @@ public class TripsService {
             throw new GeneralException("There is not trip with id" + id, HttpStatus.NOT_FOUND);
         }
     }
+
+    public TripReservationsResponse getTripReservations(Long tripId) throws GeneralException {
+
+        try {
+            Optional<Trip> optionalTrip = tripsRepository.findById(tripId);
+
+            if(optionalTrip.isPresent()){
+                List<Integer> listOfId = new ArrayList<>();
+                List<CustomerDTO> customers = optionalTrip.get().getReservations()
+                        .stream()
+                        .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
+
+                for(Reservation r: optionalTrip.get().getReservations()){
+                    listOfId.add(r.getReservationId());
+                }
+
+                return new TripReservationsResponse(
+                        "SUCCESS",
+                        "Reservations successfully retrieved",
+                        listOfId,
+                        customers);
+            }
+            else throw new Exception();
+
+        }
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+
+    }
+
 
 }

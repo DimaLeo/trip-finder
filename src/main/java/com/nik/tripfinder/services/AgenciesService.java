@@ -21,10 +21,10 @@ public class AgenciesService {
     private final TripDTOMapper tripDTOMapper;
 
     public AgenciesService(AgenciesRepository agenciesRepository, MinimalAgencyDTOMapper minimalAgencyDTOMapper,
-            TripDTOMapper tripDTOMapper, TripDTOMapper tripDTOMapper1) {
+                           TripDTOMapper tripDTOMapper) {
         this.agenciesRepository = agenciesRepository;
         this.minimalAgencyDTOMapper = minimalAgencyDTOMapper;
-        this.tripDTOMapper = tripDTOMapper1;
+        this.tripDTOMapper = tripDTOMapper;
     }
 
     public List<MinimalAgencyDTO> getAllAgencies() throws Exception {

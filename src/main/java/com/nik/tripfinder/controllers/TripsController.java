@@ -3,6 +3,7 @@ package com.nik.tripfinder.controllers;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
+import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.services.TripsService;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -76,6 +77,12 @@ public class TripsController {
     public ResponseEntity<Void> deleteTrip(@PathVariable Long id) throws GeneralException {
         tripsService.deleteTrip(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{trip_id}/reservations")
+    public ResponseEntity<TripReservationsResponse> getTripReservations(@PathVariable(name = "trip_id") Long trip_id) throws GeneralException {
+        TripReservationsResponse responseBody = tripsService.getTripReservations(trip_id);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
 }
