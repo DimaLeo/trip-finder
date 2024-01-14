@@ -81,7 +81,7 @@ public class TripsService {
             Integer agencyId,
             Integer customerId) throws GeneralException {
 
-        try{
+        try {
             List<Trip> trips =
                     tripsRepository
                             .findTripsWithOptionalParameters(
@@ -99,16 +99,13 @@ public class TripsService {
                                             getCustomerId().equals(customerId))
             ));
 
-
-
-
             return tripDTOMapper.mapToDTOList(trips);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
+
     public List<String> getAllDestinations() throws GeneralException {
         try {
             return tripsRepository.findAllDestinations();
