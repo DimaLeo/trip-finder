@@ -6,7 +6,6 @@ import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Agency;
-import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,10 @@ public class AgenciesService {
 
     private final AgenciesRepository agenciesRepository;
     private final MinimalAgencyDTOMapper minimalAgencyDTOMapper;
-    private  final TripDTOMapper tripDTOMapper;
+    private final TripDTOMapper tripDTOMapper;
 
-    public AgenciesService(AgenciesRepository agenciesRepository, MinimalAgencyDTOMapper minimalAgencyDTOMapper, TripDTOMapper tripDTOMapper, TripDTOMapper tripDTOMapper1) {
+    public AgenciesService(AgenciesRepository agenciesRepository, MinimalAgencyDTOMapper minimalAgencyDTOMapper,
+            TripDTOMapper tripDTOMapper, TripDTOMapper tripDTOMapper1) {
         this.agenciesRepository = agenciesRepository;
         this.minimalAgencyDTOMapper = minimalAgencyDTOMapper;
         this.tripDTOMapper = tripDTOMapper1;
@@ -39,29 +39,19 @@ public class AgenciesService {
     }
 
     public List<TripDTO> getAgencyTrips(Integer id) throws GeneralException {
-
         Agency dbAgency;
 
-        try{
+        try {
             Optional<Agency> optionalAgency = this.agenciesRepository.findById(id);
 
-            if(optionalAgency.isPresent()){
-
+            if (optionalAgency.isPresent()) {
                 dbAgency = optionalAgency.get();
-
                 return tripDTOMapper.mapToDTOList(dbAgency.getTrips());
-
-            }
-            else {
+            } else {
                 throw new Exception();
             }
-
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-
-
     }
 }

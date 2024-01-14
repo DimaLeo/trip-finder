@@ -124,16 +124,10 @@ public class TripsService {
 
     }
 
-    public void deleteTrip(Long id) throws EntityNotFoundException, GeneralException {
+    public void deleteTrip(Long id) throws GeneralException {
         Optional<Trip> tripOptional = tripsRepository.findById(id);
         if (tripOptional.isPresent()) {
             tripsRepository.delete(tripOptional.get());
-            // List<Reservation> tripReservations = reservationRepository.findReservationsByTripId(id);
-            // for (Reservation reservation : tripReservations) {
-            //     reservationRepository.delete(reservation);
-            // }
-            // Trip tripToDelete = tripOptional.get();
-            // tripsRepository.delete(tripToDelete);
         } else {
             throw new GeneralException("There is not trip with id" + id, HttpStatus.NOT_FOUND);
         }

@@ -1,6 +1,5 @@
 package com.nik.tripfinder.services;
 
-import com.nik.tripfinder.DTO.CustomerDTO.CustomerDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Customer;
 import com.nik.tripfinder.models.Reservation;
@@ -99,44 +98,13 @@ public class ReservationService {
 
     }
 
-    // public TripReservationsResponse getTripReservations(Long tripId) throws GeneralException {
-
-    //     try {
-    //         List<Reservation> reservations = reservationRepository.findReservationsByTripId(tripId);
-    //         List<Integer> listOfId = new ArrayList<>();
-    //         List<CustomerDTO> customers = reservations.
-    //                 stream()
-    //                 .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
-
-    //         for(Reservation r: reservations){
-    //             listOfId.add(r.getReservationId());
-    //         }
-
-    //         return new TripReservationsResponse(
-    //                 "SUCCESS",
-    //                 "Reservations successfully retrieved",
-    //                 listOfId,
-    //                 customers);
-    //     }
-    //     catch (Exception e){
-    //         throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-
-    //     }
-
-
-    // }
-
     @Transactional
     public void cancelReservation(Integer reservationId) throws GeneralException {
-        try {
-            reservationRepository.deleteReservationByReservationId(reservationId);
-             if (reservationRepository.existsReservationByReservationId(reservationId)) {
-                 throw new GeneralException("something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-             }
-        }
-        catch (Exception e ) {
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-
+        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+        if (reservationOptional.isPresent()) {
+            reservationRepository.delete(reservationOptional.get());
+        } else {
+            throw new GeneralException("There is no reservation with id" + reservationId, HttpStatus.NOT_FOUND);
         }
     }
 }
