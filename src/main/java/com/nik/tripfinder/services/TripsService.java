@@ -6,15 +6,12 @@ import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.DTO.TripDTO.TripDTOMapper;
 import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.models.Agency;
-import com.nik.tripfinder.models.Reservation;
 import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
-import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
 import com.nik.tripfinder.util.Timestamp;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +27,7 @@ public class TripsService {
     private final CustomerDTOMapper customerDTOMapper;
 
     public TripsService(TripsRepository tripsRepository, AgenciesRepository agenciesRepository,
-                        TripDTOMapper tripDTOMapper, CustomerDTOMapper customerDTOMapper) {
+            TripDTOMapper tripDTOMapper, CustomerDTOMapper customerDTOMapper) {
         this.tripsRepository = tripsRepository;
         this.agenciesRepository = agenciesRepository;
         this.tripDTOMapper = tripDTOMapper;
@@ -83,20 +80,19 @@ public class TripsService {
             Integer customerId) throws GeneralException {
 
         try {
-            // Get the trips with the given filters (all are optional) 
+            // Get the trips with the given filters (all are optional)
             // It does not return trips with start date before today
             List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(
-                                    startDate, endDate,
-                                    destination, departureArea,
-                                    agencyId, Timestamp.todaysTimestamp());
+                    startDate, endDate,
+                    destination, departureArea,
+                    agencyId, Timestamp.todaysTimestamp());
 
-            
             if (customerId != null) {
-                // Add a field to each trip indicating if the given user has a reservation for it
+                // Add a field to each trip indicating if the given user has a reservation for
+                // it
                 trips.forEach(trip -> trip.setHasReservation(
-                    trip.getReservations().stream().anyMatch(
-                            reservation -> reservation.getCustomer().getCustomerId().equals(customerId))
-                ));
+                        trip.getReservations().stream().anyMatch(
+                                reservation -> reservation.getCustomer().getCustomerId().equals(customerId))));
             }
 
             return tripDTOMapper.mapToDTOList(trips);
@@ -129,41 +125,27 @@ public class TripsService {
         if (tripOptional.isPresent()) {
             tripsRepository.delete(tripOptional.get());
         } else {
-            throw new GeneralException("There is not trip with id" + id, HttpStatus.NOT_FOUND);
+            throw new GeneralException("There is no trip with id" + id, HttpStatus.NOT_FOUND);
         }
     }
 
-    public TripReservationsResponse getTripReservations(Long tripId) throws GeneralException {
-
+    public List<CustomerDTO> getTripReservations(Long tripId) throws GeneralException {
         try {
+            // Check if the given trip id corresponds to a trip
             Optional<Trip> optionalTrip = tripsRepository.findById(tripId);
-
-            if(optionalTrip.isPresent()){
-                List<Integer> listOfId = new ArrayList<>();
+            if (optionalTrip.isPresent()) {
+                // Gets the user info for each reservation of the given trip
                 List<CustomerDTO> customers = optionalTrip.get().getReservations()
                         .stream()
                         .map(reservation -> customerDTOMapper.apply(reservation.getCustomer())).toList();
 
-                for(Reservation r: optionalTrip.get().getReservations()){
-                    listOfId.add(r.getReservationId());
-                }
-
-                return new TripReservationsResponse(
-                        "SUCCESS",
-                        "Reservations successfully retrieved",
-                        listOfId,
-                        customers);
-            }
-            else throw new Exception();
-
-        }
-        catch (Exception e){
+                return customers;
+            } else throw new GeneralException("There is no trip with id " + tripId, HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            if (e instanceof GeneralException)
+                throw e;
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
-
-
     }
-
 
 }
