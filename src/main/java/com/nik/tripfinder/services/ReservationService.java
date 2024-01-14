@@ -86,25 +86,30 @@ public class ReservationService {
                 throw new GeneralException("No available slots for this trip", HttpStatus.GONE);
             }
 
+            // Create reservation
             Reservation newReservation = new Reservation(dbCustomer,dbTrip);
             dbReservation = reservationRepository.save(newReservation);
 
             return dbReservation;
-        }
-        catch (Exception e){
-            if (e instanceof GeneralException) throw e;
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (GeneralException e) {
+            throw e;
         }
 
     }
 
     @Transactional
     public void cancelReservation(Integer reservationId) throws GeneralException {
-        Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
-        if (reservationOptional.isPresent()) {
-            reservationRepository.delete(reservationOptional.get());
-        } else {
-            throw new GeneralException("There is no reservation with id" + reservationId, HttpStatus.NOT_FOUND);
+        try {
+            // Check if the reservation with the given id exists
+            Optional<Reservation> reservationOptional = reservationRepository.findById(reservationId);
+            if (reservationOptional.isPresent()) {
+                reservationRepository.delete(reservationOptional.get());
+            } else {
+                throw new GeneralException("There is no reservation with id" + reservationId, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw e;
         }
+        
     }
 }

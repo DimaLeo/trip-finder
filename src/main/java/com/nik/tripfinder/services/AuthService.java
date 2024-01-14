@@ -34,8 +34,9 @@ public class AuthService {
     private final CustomerDTOMapper customerDTOMapper;
     private final UserDTOMapper userDTOMapper;
 
-
-    public AuthService(AgenciesRepository agenciesRepository, CustomersRepository customersRepository, UserRepository userRepository, AgencyDTOMapper agencyDTOMapper, CustomerDTOMapper customerDTOMapper, UserDTOMapper userDTOMapper){
+    public AuthService(AgenciesRepository agenciesRepository, CustomersRepository customersRepository,
+            UserRepository userRepository, AgencyDTOMapper agencyDTOMapper, CustomerDTOMapper customerDTOMapper,
+            UserDTOMapper userDTOMapper) {
         this.agenciesRepository = agenciesRepository;
         this.customersRepository = customersRepository;
         this.userRepository = userRepository;
@@ -46,14 +47,12 @@ public class AuthService {
     }
 
     public AgencyResponse registerAgency(NewAgencyRequest newAgencyRequest) throws GeneralException {
-        Optional<User> existingUser;
-        Optional<Agency> existingAgency;
+        try {
+            Optional<User> existingUser;
+            Optional<Agency> existingAgency;
+            existingUser = userRepository.findUserByUsername(newAgencyRequest.getUsername());
 
-        try{
-            existingUser = userRepository
-                    .findUserByUsername(newAgencyRequest.getUsername());
-
-            if(existingUser.isPresent()){
+            if (existingUser.isPresent()) {
                 throw new GeneralException("User with the specified username already exists", HttpStatus.CONFLICT);
             }
 
@@ -62,35 +61,25 @@ public class AuthService {
                             newAgencyRequest.getBrandName(),
                             newAgencyRequest.getTaxCode());
 
-            if(existingAgency.isPresent()){
+            if (existingAgency.isPresent()) {
                 throw new GeneralException("Agency with the specified brand name already exists", HttpStatus.CONFLICT);
             }
-
+            return registerAgencyUser(newAgencyRequest);
+        } catch (GeneralException e) {
+            throw e;
         }
-        catch (GeneralException e){
-            if(!e.getStatus().equals(HttpStatus.CONFLICT)){
-                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            else throw e;
-
-        }
-
-        return registerAgencyUser(newAgencyRequest);
     }
 
-
-    public CustomerResponse registerCustomer(NewCustomerRequest newCustomerRequest) throws GeneralException{
+    public CustomerResponse registerCustomer(NewCustomerRequest newCustomerRequest) throws GeneralException {
 
         Optional<User> existingUser;
         Optional<Customer> existingCustomer;
 
-
-
-        try{
+        try {
             existingUser = userRepository
                     .findUserByUsername(newCustomerRequest.getUsername());
 
-            if(existingUser.isPresent()){
+            if (existingUser.isPresent()) {
                 throw new GeneralException("User with the specified username already exists", HttpStatus.CONFLICT);
             }
 
@@ -99,18 +88,13 @@ public class AuthService {
                             newCustomerRequest.getEmail(),
                             newCustomerRequest.getTaxCode());
 
-            if(existingCustomer.isPresent()){
+            if (existingCustomer.isPresent()) {
                 throw new GeneralException("Customer with the specified info already exists", HttpStatus.CONFLICT);
             }
 
+        } catch (GeneralException e) {
+            throw e;
         }
-        catch (GeneralException e){
-            if(!e.getStatus().equals(HttpStatus.CONFLICT)){
-                throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            else throw e;
-        }
-
         return registerCustomerUser(newCustomerRequest);
 
     }
@@ -118,68 +102,60 @@ public class AuthService {
     public AuthenticationResponse authenticate(AuthenticationRequest body) throws GeneralException {
         String validationErrors = authRequestValidation(body);
 
-        if(validationErrors.isEmpty()){
+        if (validationErrors.isEmpty()) {
             Optional<User> existingUser;
 
-            try{
+            try {
                 existingUser = userRepository.findUserByUsername(body.getUsername());
-
-                if(!existingUser.isPresent()){
-
-                    throw new GeneralException("User with username: "+ body.getUsername() + " does not exist.", HttpStatus.UNAUTHORIZED);
+                if (!existingUser.isPresent()) {
+                    throw new GeneralException("User with username: " + body.getUsername() + " does not exist.",
+                            HttpStatus.UNAUTHORIZED);
                 }
 
                 User dbUser = existingUser.get();
 
-                if(encoder.matches(body.getPassword(), dbUser.getPassword())){
-
+                if (encoder.matches(body.getPassword(), dbUser.getPassword())) {
                     Integer secondary_id;
 
-                    if(dbUser.getUserType().equals("agency")){
+                    if (dbUser.getUserType().equals("agency")) {
                         Optional<Agency> optionalAgency = agenciesRepository.findAgencyByUserId(dbUser.getId());
 
-                        if(optionalAgency.isPresent()){
+                        if (optionalAgency.isPresent()) {
                             secondary_id = optionalAgency.get().getId();
+                        } else {
+                            throw new GeneralException("No Agency or Customer found for provided username",
+                                    HttpStatus.UNAUTHORIZED);
                         }
-                        else {
-                            throw new GeneralException("No Agency or Customer found for provided username", HttpStatus.UNAUTHORIZED);                        }
-                    }
-                    else{
+                    } else {
                         Optional<Customer> optionalCustomer = customersRepository.findCustomerByUserId(dbUser.getId());
 
-                        if(optionalCustomer.isPresent()){
+                        if (optionalCustomer.isPresent()) {
                             secondary_id = optionalCustomer.get().getCustomerId();
+                        } else {
+                            throw new GeneralException("No Agency or Customer found for provided username",
+                                    HttpStatus.UNAUTHORIZED);
                         }
-                        else {
-                            throw new GeneralException("No Agency or Customer found for provided username", HttpStatus.UNAUTHORIZED);                        }
                     }
-
 
                     return new AuthenticationResponse(
                             "SUCCESS",
                             "Authenticated",
                             userDTOMapper.apply(dbUser),
-                            secondary_id
-                    );
-                }
-                else{
+                            secondary_id);
+                } else {
                     throw new GeneralException("Wrong password", HttpStatus.UNAUTHORIZED);
-
                 }
-            }
-            catch (GeneralException e){
-                if(e.getStatus().equals(HttpStatus.UNAUTHORIZED)){
+            } catch (GeneralException e) {
+                if (e.getStatus().equals(HttpStatus.UNAUTHORIZED)) {
                     throw e;
-                }
-                else throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+                } else
+                    throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-        else {
+        } else {
             throw new GeneralException(
                     "Validation Error.\n" +
-                    "message :\n"+ validationErrors,
+                            "message :\n" + validationErrors,
                     HttpStatus.BAD_REQUEST);
-
         }
     }
 
@@ -187,7 +163,7 @@ public class AuthService {
 
         String validationErrors = agencyValidation(body);
 
-        if(validationErrors.isEmpty()){
+        if (validationErrors.isEmpty()) {
             String passwordHash = encoder.encode(body.getPassword());
 
             User newUser = new User(
@@ -195,10 +171,9 @@ public class AuthService {
                     passwordHash,
                     body.getUserType());
 
-            try{
+            try {
                 newUser = userRepository.save(newUser);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new GeneralException("Something went wrong",
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -209,10 +184,9 @@ public class AuthService {
                     body.getBrandName(),
                     body.getOwner());
 
-            try{
+            try {
                 newAgency = agenciesRepository.save(newAgency);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
 
                 throw new GeneralException("Something went wrong",
                         HttpStatus.INTERNAL_SERVER_ERROR);
@@ -221,25 +195,22 @@ public class AuthService {
             return new AgencyResponse(
                     "SUCCESS",
                     "User successfully created",
-                    agencyDTOMapper.apply(newAgency)
-            );
-        }
-        else{
+                    agencyDTOMapper.apply(newAgency));
+        } else {
             throw new GeneralException(
                     "Validation Error.\n" +
-                    "message :\n"+
-                    validationErrors,
+                            "message :\n" +
+                            validationErrors,
                     HttpStatus.BAD_REQUEST);
         }
 
-
-
     }
+
     private CustomerResponse registerCustomerUser(NewCustomerRequest body) throws GeneralException {
 
         String validationErrors = customerValidation(body);
 
-        if(validationErrors.isEmpty()){
+        if (validationErrors.isEmpty()) {
             String passwordHash = encoder.encode(body.getPassword());
 
             User newUser = new User(
@@ -247,10 +218,9 @@ public class AuthService {
                     passwordHash,
                     body.getUserType());
 
-            try{
+            try {
                 newUser = userRepository.save(newUser);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new GeneralException("Something went wrong",
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -262,11 +232,10 @@ public class AuthService {
                     body.getSurname(),
                     body.getEmail());
 
-            try{
+            try {
                 newCustomer = customersRepository.save(newCustomer);
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new GeneralException("Something went wrong",
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -274,82 +243,78 @@ public class AuthService {
             return new CustomerResponse(
                     "SUCCESS",
                     "User successfully created",
-                    customerDTOMapper.apply(newCustomer)
-            );
-        }
-        else{
+                    customerDTOMapper.apply(newCustomer));
+        } else {
             throw new GeneralException(
                     "Validation Error.\n" +
-                            "message :\n"+
+                            "message :\n" +
                             validationErrors,
                     HttpStatus.BAD_REQUEST);
         }
 
-
-
     }
 
-    private String authRequestValidation(AuthenticationRequest body){
+    private String authRequestValidation(AuthenticationRequest body) {
 
         String validationResult = "";
 
-        if(!Validator.isValidUsername(body.getUsername())){
+        if (!Validator.isValidUsername(body.getUsername())) {
             validationResult = validationResult.concat("Invalid username.\n");
         }
 
-        if(!Validator.isValidPassword(body.getPassword())){
+        if (!Validator.isValidPassword(body.getPassword())) {
             validationResult = validationResult.concat("Invalid password.\n");
         }
 
         return validationResult;
     }
 
-    private String agencyValidation(NewAgencyRequest body){
+    private String agencyValidation(NewAgencyRequest body) {
         String validationResult = "";
 
-        if(!Validator.isValidUsername(body.getUsername())){
+        if (!Validator.isValidUsername(body.getUsername())) {
             validationResult = validationResult.concat("Invalid username.\n");
         }
 
-        if(!Validator.isValidPassword(body.getPassword())){
+        if (!Validator.isValidPassword(body.getPassword())) {
             validationResult = validationResult.concat("Invalid password.\n");
         }
 
-        if(!Validator.isValidTaxCode(body.getTaxCode())){
+        if (!Validator.isValidTaxCode(body.getTaxCode())) {
             validationResult = validationResult.concat("Invalid tax code.\n");
         }
 
-        if(!Validator.isValidOwner(body.getOwner())){
+        if (!Validator.isValidOwner(body.getOwner())) {
             validationResult = validationResult.concat("Invalid owner.\n");
         }
 
         return validationResult;
     }
 
-    private String customerValidation(NewCustomerRequest body){
+    private String customerValidation(NewCustomerRequest body) {
         String validationResult = "";
 
-        if(!Validator.isValidUsername(body.getUsername())){
+        if (!Validator.isValidUsername(body.getUsername())) {
             validationResult = validationResult.concat("Invalid username.\n");
         }
 
-        if(!Validator.isValidPassword(body.getPassword())){
+        if (!Validator.isValidPassword(body.getPassword())) {
             validationResult = validationResult.concat("Invalid password.\n");
         }
 
-        if(!Validator.isValidTaxCode(body.getTaxCode())){
+        if (!Validator.isValidTaxCode(body.getTaxCode())) {
             validationResult = validationResult.concat("Invalid tax code.\n");
         }
 
-        if(!Validator.isValidName(body.getName())){
+        if (!Validator.isValidName(body.getName())) {
             validationResult = validationResult.concat("Invalid name.\n");
         }
 
-        if(!Validator.isValidName(body.getSurname())){
+        if (!Validator.isValidName(body.getSurname())) {
             validationResult = validationResult.concat("Invalid surname.\n");
         }
 
-        if(!Validator.isValidEmail(body.getEmail())){
+        if (!Validator.isValidEmail(body.getEmail())) {
             validationResult = validationResult.concat("Invalid email.\n");
         }
 

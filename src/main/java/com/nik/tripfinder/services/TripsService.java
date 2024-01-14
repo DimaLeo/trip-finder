@@ -64,10 +64,8 @@ public class TripsService {
             newTrip = tripsRepository.save(newTrip);
 
             return tripDTOMapper.apply(newTrip);
-        } catch (Exception e) {
-            if (e instanceof GeneralException)
-                throw e;
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (GeneralException e) {
+            throw e;
         }
     }
 
@@ -108,7 +106,6 @@ public class TripsService {
         } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public List<String> getAllDepartureAreas() throws GeneralException {
@@ -117,16 +114,19 @@ public class TripsService {
         } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public void deleteTrip(Long id) throws GeneralException {
-        Optional<Trip> tripOptional = tripsRepository.findById(id);
-        if (tripOptional.isPresent()) {
-            tripsRepository.delete(tripOptional.get());
-        } else {
-            throw new GeneralException("There is no trip with id" + id, HttpStatus.NOT_FOUND);
-        }
+        try {
+            Optional<Trip> tripOptional = tripsRepository.findById(id);
+            if (tripOptional.isPresent()) {
+                tripsRepository.delete(tripOptional.get());
+            } else {
+                throw new GeneralException("There is no trip with id" + id, HttpStatus.NOT_FOUND);
+            }
+        } catch (GeneralException e) {
+            throw e;
+        }  
     }
 
     public List<CustomerDTO> getTripReservations(Long tripId) throws GeneralException {
@@ -142,9 +142,7 @@ public class TripsService {
                 return customers;
             } else throw new GeneralException("There is no trip with id " + tripId, HttpStatus.CONFLICT);
         } catch (Exception e) {
-            if (e instanceof GeneralException)
-                throw e;
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 

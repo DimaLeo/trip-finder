@@ -27,18 +27,28 @@ public class CustomersService {
     }
 
     public CustomerDTO getCustomerById(Integer id) throws GeneralException {
-        Optional<Customer> dbCustomer = customersRepository.findById(id);
-        if (dbCustomer.isPresent()) {
-                return customerDTOMapper.apply(dbCustomer.get());
-        } else {
-            throw new GeneralException("There is no customer with id " + id, HttpStatus.BAD_REQUEST);
+        try {
+            // Check if there is a customer with the given id
+            Optional<Customer> dbCustomer = customersRepository.findById(id);
+            if (dbCustomer.isPresent()) {
+                    return customerDTOMapper.apply(dbCustomer.get());
+            } else {
+                throw new GeneralException("There is no customer with id " + id, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            throw e;
         }
     }
 
     public List<ReservationDTO> getReservations(Integer customerId) throws GeneralException {
-        Optional<Customer> optionalCustomer = customersRepository.findById(customerId);
-        if (optionalCustomer.isPresent()) {
-            return reservationDTOMapper.mapToDTOList(optionalCustomer.get().getReservations());
-        } else throw new GeneralException("There is no customer with id " + customerId, HttpStatus.BAD_REQUEST);
+        try {
+            // Check if there is a customer with the given id
+            Optional<Customer> optionalCustomer = customersRepository.findById(customerId);
+            if (optionalCustomer.isPresent()) {
+                return reservationDTOMapper.mapToDTOList(optionalCustomer.get().getReservations());
+            } else throw new GeneralException("There is no customer with id " + customerId, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

@@ -31,12 +31,12 @@ public class AgenciesService {
         this.agencyDTOMapper = agencyDTOMapper;
     }
 
-    public List<MinimalAgencyDTO> getAllAgencies() throws Exception {
+    public List<MinimalAgencyDTO> getAllAgencies() throws GeneralException {
         try {
             List<Agency> agencies = agenciesRepository.findAll();
             return minimalAgencyDTOMapper.mapToDTOList(agencies);
         } catch (Exception e) {
-            throw new Exception("Failed to retrieve agencies from db.");
+            throw new GeneralException("Failed to retrieve agencies from db.");
         }
     }
 

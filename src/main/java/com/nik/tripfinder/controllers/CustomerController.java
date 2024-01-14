@@ -24,12 +24,13 @@ public class CustomerController {
         this.customersService = customersService;
     }
 
+    // Get customer details
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Integer id) throws GeneralException {
-        CustomerDTO customer = customersService.getCustomerById(id);
-        return new ResponseEntity<>(customer, HttpStatus.OK);
+        return new ResponseEntity<>(customersService.getCustomerById(id), HttpStatus.OK);
     }
 
+    // Get customer's reservations
     @GetMapping("/{id}/reservations")
     public List<ReservationDTO> getAllReservations(@PathVariable(name = "id") Integer customerId) throws GeneralException {
         return customersService.getReservations(customerId);

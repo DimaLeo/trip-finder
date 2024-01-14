@@ -10,6 +10,11 @@ public class GeneralException extends Exception {
         this.status = status;
     }
 
+    public GeneralException(String message) {
+        super(message);
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
     public HttpStatus getStatus() {
         return status;
     }
