@@ -10,6 +10,7 @@ import com.nik.tripfinder.payloads.requests.NewTripRequest;
 import com.nik.tripfinder.repositories.AgenciesRepository;
 import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
+import com.nik.tripfinder.util.Timestamp;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -37,27 +38,29 @@ public class TripsService {
 
     public TripDTO save(NewTripRequest trip) throws GeneralException {
 
-        System.err.println(trip.getTrip().getEndDate());
-        System.err.println(trip.getAgencyId());
-        // System.err.println();
+        Long startDate = Timestamp.getMidnightTimestamp(trip.getTrip().getStartDate());
+        Long endDate = Timestamp.getMidnightTimestamp(trip.getTrip().getEndDate());
+
+        // Check if input timestamps are correct
+        if (startDate > endDate) throw new GeneralException("End date should be after start date", HttpStatus.BAD_REQUEST);
+        if (Timestamp.todaysTimestamp() > startDate) throw new GeneralException("Start date cannot be before today", HttpStatus.BAD_REQUEST);
+ 
+        Agency dbAgency;
+        try {
+            Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
+
+            if (!agencyOptional.isPresent()) {
+                throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
+            }
+
+            dbAgency = agencyOptional.get();
+        } catch (Exception e) {
+            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
+                throw e;
+            }
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return null;
-
-        // Agency dbAgency;
-
-        // try {
-        //     Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
-
-        //     if (!agencyOptional.isPresent()) {
-        //         throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
-        //     }
-
-        //     dbAgency = agencyOptional.get();
-        // } catch (Exception e) {
-        //     if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
-        //         throw e;
-        //     }
-        //     throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
 
         // try {
         //     Trip newTrip = new Trip(

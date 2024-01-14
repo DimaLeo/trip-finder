@@ -3,7 +3,6 @@ package com.nik.tripfinder.models;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -32,7 +31,6 @@ public class Trip {
     @ManyToOne
     @JoinColumn(name = "agency_id")
     // Add the agency to the returned Trip Entity
-    @JsonManagedReference
     private Agency agency;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL)
@@ -54,6 +52,16 @@ public class Trip {
         this.tripSchedule = tripSchedule;
         this.maxParticipants = maxParticipants;
         this.agency = agency;
+    }
+
+    public Trip(Long startDate, Long endDate, String departureArea, String destination, String tripSchedule,
+            Integer maxParticipants) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.departureArea = departureArea;
+        this.destination = destination;
+        this.tripSchedule = tripSchedule;
+        this.maxParticipants = maxParticipants;
     }
 
     public Trip() {
