@@ -37,40 +37,45 @@ public class TripsService {
 
     public TripDTO save(NewTripRequest trip) throws GeneralException {
 
-        Agency dbAgency;
+        System.err.println(trip.getTrip().getEndDate());
+        System.err.println(trip.getAgencyId());
+        // System.err.println();
+        return null;
 
-        try {
-            Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
+        // Agency dbAgency;
 
-            if (!agencyOptional.isPresent()) {
-                throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
-            }
+        // try {
+        //     Optional<Agency> agencyOptional = agenciesRepository.findById(trip.getAgencyId());
 
-            dbAgency = agencyOptional.get();
-        } catch (Exception e) {
-            if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
-                throw e;
-            }
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        //     if (!agencyOptional.isPresent()) {
+        //         throw new GeneralException("Failed to retrieve the agency.", HttpStatus.CONFLICT);
+        //     }
 
-        try {
-            Trip newTrip = new Trip(
-                    trip.getStartDate(),
-                    trip.getEndDate(),
-                    trip.getDepartureArea(),
-                    trip.getDestination(),
-                    trip.getTripSchedule(),
-                    trip.getMaxParticipants(),
-                    dbAgency);
+        //     dbAgency = agencyOptional.get();
+        // } catch (Exception e) {
+        //     if(e instanceof GeneralException && ((GeneralException) e).getStatus().equals(HttpStatus.CONFLICT)){
+        //         throw e;
+        //     }
+        //     throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        // }
 
-            newTrip = tripsRepository.save(newTrip);
+        // try {
+        //     Trip newTrip = new Trip(
+        //             trip.getStartDate(),
+        //             trip.getEndDate(),
+        //             trip.getDepartureArea(),
+        //             trip.getDestination(),
+        //             trip.getTripSchedule(),
+        //             trip.getMaxParticipants(),
+        //             dbAgency);
 
-            return tripDTOMapper.apply(newTrip);
+        //     newTrip = tripsRepository.save(newTrip);
 
-        } catch (Exception e) {
-            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        //     return tripDTOMapper.apply(newTrip);
+
+        // } catch (Exception e) {
+        //     throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        // }
     }
 
     public List<TripDTO> findTripsWithOptionalParameters(
