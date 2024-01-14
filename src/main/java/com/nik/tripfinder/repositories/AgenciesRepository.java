@@ -1,8 +1,10 @@
 package com.nik.tripfinder.repositories;
 
 import com.nik.tripfinder.models.Agency;
+import com.nik.tripfinder.models.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AgenciesRepository extends JpaRepository<Agency, Integer> {
