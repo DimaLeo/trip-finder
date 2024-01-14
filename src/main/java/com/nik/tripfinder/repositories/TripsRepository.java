@@ -16,14 +16,18 @@ public interface TripsRepository extends JpaRepository<Trip, Long> {
     public List<String> findAllDepartureAreas();
 
     @Query("SELECT t FROM Trip t " +
-            "WHERE (:startDate IS NULL OR t.startDate = :startDate) " +
+            "WHERE (:todaysTimestamp <= t.startDate) " +
+            "AND (:startDate IS NULL OR t.startDate = :startDate) " +
             "AND (:endDate IS NULL OR t.endDate = :endDate) " +
             "AND (:destination IS NULL OR t.destination = :destination) " +
-            "AND (:departureArea IS NULL OR t.departureArea = :departureArea)")
+            "AND (:departureArea IS NULL OR t.departureArea = :departureArea) " +
+            "AND (:agencyId IS NULL OR t.agency.id = :agencyId) ")
     List<Trip> findTripsWithOptionalParameters(
             @Param("startDate") Long startDate,
             @Param("endDate") Long endDate,
             @Param("destination") String destination,
-            @Param("departureArea") String departureArea);
+            @Param("departureArea") String departureArea,
+            @Param("agencyId") Integer agencyId,
+            @Param("todaysTimestamp") Long todaysTimestamp);
 
 }

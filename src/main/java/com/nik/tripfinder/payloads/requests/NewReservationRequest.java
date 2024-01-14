@@ -1,15 +1,12 @@
 package com.nik.tripfinder.payloads.requests;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class NewReservationRequest {
 
-    String username;
-    @JsonProperty("trip_id")
+    Integer customerId;
     Long tripId;
 
-    public String getUsername() {
-        return username;
+    public Integer getCustomerId() {
+        return customerId;
     }
 
     public Long getTripId() {

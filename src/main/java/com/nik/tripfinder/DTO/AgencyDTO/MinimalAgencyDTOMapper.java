@@ -11,16 +11,10 @@ import java.util.stream.Collectors;
 public class MinimalAgencyDTOMapper implements Function<Agency, MinimalAgencyDTO> {
     @Override
     public MinimalAgencyDTO apply(Agency agency) {
-        return new MinimalAgencyDTO(
-                agency.getBrandName(),
-                agency.getOwner()
-        );
+        return new MinimalAgencyDTO(agency.getId(), agency.getBrandName());
     }
 
-    public List<MinimalAgencyDTO> mapToDTOList(List<Agency> all_agencies) {
-        return all_agencies.stream()
-                .map(agency -> new MinimalAgencyDTO(agency.getBrandName(), agency.getOwner()))
-                .collect(Collectors.toList());
-
+    public List<MinimalAgencyDTO> mapToDTOList(List<Agency> agencies) {
+        return agencies.stream().map(agency -> apply(agency)).collect(Collectors.toList());
     }
 }

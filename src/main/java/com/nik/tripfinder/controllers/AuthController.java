@@ -1,5 +1,6 @@
 package com.nik.tripfinder.controllers;
 
+import com.nik.tripfinder.exceptions.GeneralException;
 import com.nik.tripfinder.payloads.requests.AuthenticationRequest;
 import com.nik.tripfinder.payloads.requests.NewAgencyRequest;
 import com.nik.tripfinder.payloads.requests.NewCustomerRequest;
@@ -23,29 +24,22 @@ public class AuthController {
     }
 
     @PostMapping("/agency-registration")
-    public ResponseEntity<AgencyResponse> registerAgency(@Valid @RequestBody NewAgencyRequest newAgencyRequest){
-
+    public ResponseEntity<AgencyResponse> registerAgency(@Valid @RequestBody NewAgencyRequest newAgencyRequest) throws GeneralException {
         AgencyResponse agencyResponse = authService.registerAgency(newAgencyRequest);
-
         return new ResponseEntity<>(agencyResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/customer-registration")
-    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody NewCustomerRequest newCustomerRequest){
-
+    public ResponseEntity<CustomerResponse> registerCustomer(@RequestBody NewCustomerRequest newCustomerRequest) throws GeneralException {
         CustomerResponse newCustomerResponse = authService.registerCustomer(newCustomerRequest);
-
         return new ResponseEntity<>(newCustomerResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticateAgency(@Valid @RequestBody AuthenticationRequest body){
-
+    public ResponseEntity<AuthenticationResponse> authenticateAgency(@Valid @RequestBody AuthenticationRequest body) throws GeneralException {
         AuthenticationResponse authenticatedUser = authService.authenticate(body);
-
         return new ResponseEntity<>(authenticatedUser, HttpStatus.OK);
-
     }
 }

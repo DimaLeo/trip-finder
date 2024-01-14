@@ -1,8 +1,8 @@
 package com.nik.tripfinder.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,8 +11,8 @@ public class Agency {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "agency_id")
-    private Integer agencyId;
+    @Column(name = "id")
+    private Integer id;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
@@ -24,7 +24,8 @@ public class Agency {
     private String owner;
 
     @OneToMany(mappedBy = "agency", cascade = CascadeType.ALL)
-    private List<Trip> trips = new ArrayList<Trip>();
+    @JsonBackReference
+    private List<Trip> trips;
 
     public Agency(User user, String taxCode, String brandName, String owner) {
         this.user = user;
@@ -39,18 +40,17 @@ public class Agency {
         this.owner = owner;
     }
 
-    public Agency(Integer agencyId, String taxCode, String brandName, String owner) {
-        this.agencyId = agencyId;
-        this.taxCode = taxCode;
-        this.brandName = brandName;
-        this.owner = owner;
-    }
-
     public Agency() {
     }
 
+    public Integer getId() {
+        return this.id;
+    }
 
-    public User getUser() {return this.user;}
+    public User getUser() {
+        return this.user;
+    }
+
     public String getTaxCode() {
         return this.taxCode;
     }
@@ -62,7 +62,8 @@ public class Agency {
     public String getOwner() {
         return this.owner;
     }
-    // public List<Trip> getTrips() {
-    //     return this.trips;
-    // }
+
+    public List<Trip> getTrips() {
+        return trips;
+    }
 }

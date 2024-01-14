@@ -3,6 +3,8 @@ package com.nik.tripfinder.DTO.AgencyDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AgencyDTO(
+        @JsonProperty("user_id")
+        Integer userId, 
         String username,
         @JsonProperty("user_type")
         String userType,

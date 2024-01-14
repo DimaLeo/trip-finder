@@ -1,5 +1,9 @@
 package com.nik.tripfinder.models;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +25,10 @@ public class Customer {
     private String surname;
     @Column(name = "email", unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Reservation> reservations;
 
     public Customer() {
 
@@ -63,6 +71,7 @@ public class Customer {
         return customerId;
     }
 
+
     public User getUser() {
         return user;
     }
@@ -81,5 +90,9 @@ public class Customer {
 
     public String getEmail() {
         return email;
+    }
+
+    public List<Reservation> getReservations() {
+        return this.reservations;
     }
 }

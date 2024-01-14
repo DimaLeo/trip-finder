@@ -1,8 +1,6 @@
 package com.nik.tripfinder.payloads.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nik.tripfinder.models.User;
-import jakarta.persistence.*;
 
 public class NewCustomerRequest {
 

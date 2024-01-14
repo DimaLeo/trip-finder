@@ -1,24 +1,23 @@
 package com.nik.tripfinder.payloads.requests;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.nik.tripfinder.DTO.TripDTO.TripDTO;
 import com.nik.tripfinder.models.Trip;
 
 public class NewTripRequest {
-    @JsonProperty("user_id")
-    private Integer userId;
-    private TripDTO trip;
 
-    public NewTripRequest(Integer userId, TripDTO trip) {
-        this.userId = userId;
+    private Trip trip;
+    private Integer agencyId;
+
+    public NewTripRequest(Trip trip, Integer agencyId) {
         this.trip = trip;
+        this.agencyId = agencyId;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public TripDTO getTrip() {
+    public Trip getTrip() {
         return trip;
     }
+
+    public Integer getAgencyId() {
+        return agencyId;
+    }
+
 }
