@@ -1,12 +1,16 @@
 package com.nik.tripfinder.controllers;
 
+import com.nik.tripfinder.DTO.AgencyDTO.AgencyDTO;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
+import com.nik.tripfinder.models.Agency;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,9 +31,13 @@ public class AgencyController {
         return new ResponseEntity<>(agenciesService.getAllAgencies(), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<AgencyDTO> getAgencyDetails(@PathVariable Integer id) throws Exception {
+        return new ResponseEntity<>(agenciesService.getAgencyDetails(id), HttpStatus.OK);
+    }
+
     // /api/agencies
     // GET /: get all the agencies
     // GET /{agencyId}/trips: get all trips of an agency
-
 
 }
