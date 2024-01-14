@@ -35,8 +35,7 @@ public class AgencyController {
     // Get all the trips of an agency with the given id
     @GetMapping(path = "/{id}/trips")
     public ResponseEntity<List<TripDTO>> getAgencyTrips(@PathVariable(name = "id") Integer id) throws GeneralException {
-        List<TripDTO> trips = agenciesService.getAgencyTrips(id);
-        return new ResponseEntity<>(trips, HttpStatus.OK);
+        return new ResponseEntity<>(agenciesService.getAgencyTrips(id), HttpStatus.OK);
     }
 
     // Get the details of an agency with the given id

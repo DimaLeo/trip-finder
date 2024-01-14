@@ -54,15 +54,13 @@ public class TripsController {
     // Get the destinations of all trips
     @GetMapping("/destinations")
     public ResponseEntity<List<String>> getAllDestinations() throws GeneralException {
-        List<String> destinations = tripsService.getAllDestinations();
-        return new ResponseEntity<>(destinations, HttpStatus.OK);
+        return new ResponseEntity<>(tripsService.getAllDestinations(), HttpStatus.OK);
     }
 
     // Get the departure areas of all trips
     @GetMapping("/departure-areas")
     public ResponseEntity<List<String>> getAllDepartureAreas() throws GeneralException {
-        List<String> departureAreas = tripsService.getAllDepartureAreas();
-        return new ResponseEntity<>(departureAreas, HttpStatus.OK);
+        return new ResponseEntity<>(tripsService.getAllDepartureAreas(), HttpStatus.OK);
     }
 
     // Delete a trip
@@ -75,8 +73,7 @@ public class TripsController {
     // Get the reservations of a trip
     @GetMapping("/{trip_id}/reservations")
     public ResponseEntity<List<CustomerDTO>> getTripReservations(@PathVariable(name = "trip_id") Long tripId) throws GeneralException {
-        List<CustomerDTO> responseBody = tripsService.getTripReservations(tripId);
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        return new ResponseEntity<>(tripsService.getTripReservations(tripId), HttpStatus.OK);
     }
 
 }

@@ -34,25 +34,20 @@ public class AgenciesService {
     public List<MinimalAgencyDTO> getAllAgencies() throws Exception {
         try {
             List<Agency> agencies = agenciesRepository.findAll();
-
             return minimalAgencyDTOMapper.mapToDTOList(agencies);
         } catch (Exception e) {
             throw new Exception("Failed to retrieve agencies from db.");
         }
-
     }
 
     public List<TripDTO> getAgencyTrips(Integer id) throws GeneralException {
-        Agency dbAgency;
-
         try {
+            // Check if the given agency id corresponds to an agency 
             Optional<Agency> optionalAgency = this.agenciesRepository.findById(id);
-
             if (optionalAgency.isPresent()) {
-                dbAgency = optionalAgency.get();
-                return tripDTOMapper.mapToDTOList(dbAgency.getTrips());
+                return tripDTOMapper.mapToDTOList(optionalAgency.get().getTrips());
             } else {
-                throw new Exception();
+                throw new GeneralException("There is no agency with id " + id, HttpStatus.CONFLICT);
             }
         } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,6 +56,7 @@ public class AgenciesService {
 
     public AgencyDTO getAgencyDetails(Integer id) throws GeneralException {
         try {
+            // Check if the given agency id corresponds to an agency 
             Optional<Agency> agency = agenciesRepository.findById(id);
             if (agency.isPresent()) {
                 return agencyDTOMapper.apply(agency.get());
