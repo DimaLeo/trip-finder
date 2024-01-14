@@ -1,6 +1,5 @@
 package com.nik.tripfinder.payloads.responses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nik.tripfinder.DTO.UserDTO.UserDTO;
 
 public class AuthenticationResponse extends GenericResponse{
