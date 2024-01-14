@@ -32,7 +32,7 @@ public class TripsController {
 
     // POST /: create trip
     @PostMapping("")
-    public ResponseEntity<TripDTO> createTrip(@RequestBody NewTripRequest trip) throws Exception {
+    public ResponseEntity<TripDTO> createTrip(@RequestBody NewTripRequest trip) throws GeneralException {
         TripDTO newTrip = tripsService.save(trip);
         return new ResponseEntity<>(newTrip, HttpStatus.CREATED);
     }
