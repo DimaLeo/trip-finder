@@ -17,12 +17,14 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    // Create a new reservation
     @PostMapping("/create")
     public ResponseEntity<Reservation> createReservation(@RequestBody NewReservationRequest body) throws Exception {
         Reservation reservation = reservationService.createReservation(body);
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
+    // Delete a reservation
     @DeleteMapping("/cancel/{reservation_id}")
     public ResponseEntity<Void> cancelReservation(@PathVariable Integer reservation_id) throws Exception {
         reservationService.cancelReservation(reservation_id);

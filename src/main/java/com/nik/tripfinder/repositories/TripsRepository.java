@@ -16,7 +16,8 @@ public interface TripsRepository extends JpaRepository<Trip, Long> {
     public List<String> findAllDepartureAreas();
 
     @Query("SELECT t FROM Trip t " +
-            "WHERE (:startDate IS NULL OR t.startDate = :startDate) " +
+            "WHERE (:todaysTimestamp IS t.startDate >= :todaysTimestamp) " +
+            "AND (:startDate IS NULL OR t.startDate = :startDate) " +
             "AND (:endDate IS NULL OR t.endDate = :endDate) " +
             "AND (:destination IS NULL OR t.destination = :destination) " +
             "AND (:departureArea IS NULL OR t.departureArea = :departureArea) " +
@@ -26,6 +27,7 @@ public interface TripsRepository extends JpaRepository<Trip, Long> {
             @Param("endDate") Long endDate,
             @Param("destination") String destination,
             @Param("departureArea") String departureArea,
-            @Param("agencyId") Integer agencyId);
+            @Param("agencyId") Integer agencyId,
+            @Param("todays_timestamp") Long todaysTimestamp);
 
 }

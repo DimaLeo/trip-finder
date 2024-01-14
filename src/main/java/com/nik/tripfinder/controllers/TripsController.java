@@ -31,20 +31,14 @@ public class TripsController {
         this.tripsService = tripsService;
     }
 
-    // POST /: create trip
+    // Create a new trip
     @PostMapping("")
     public ResponseEntity<TripDTO> createTrip(@RequestBody NewTripRequest trip) throws GeneralException {
         TripDTO newTrip = tripsService.save(trip);
         return new ResponseEntity<>(newTrip, HttpStatus.CREATED);
     }
 
-    // GET /: get all trips
-    // or filtered search of trips:
-    // agencyId={agencyID}
-    // startDate={startDate}
-    // endDate={endDate}
-    // destination={destination}
-    // departureArea={departureArea} 
+    // Gets all the trips filtered by the given parameters
     @GetMapping("")
     public ResponseEntity<List<TripDTO>> getTrips(
             @RequestParam(required = false) Long startDate,
@@ -55,30 +49,31 @@ public class TripsController {
             @RequestParam(required = false) Integer customerId) throws GeneralException {
 
         List<TripDTO> trips = tripsService.findTripsWithOptionalParameters(startDate, endDate, destination, departureArea, agencyId, customerId);
-
         return new ResponseEntity<>(trips, HttpStatus.OK);
     }
 
-    // GET /destinations: get the destinations of all the trips
+    // Get the destinations of all trips
     @GetMapping("/destinations")
     public ResponseEntity<List<String>> getAllDestinations() throws GeneralException {
         List<String> destinations = tripsService.getAllDestinations();
         return new ResponseEntity<>(destinations, HttpStatus.OK);
     }
 
-    // GET /departure-areas: get the departure areas of all the trips
+    // Get the departure areas of all trips
     @GetMapping("/departure-areas")
     public ResponseEntity<List<String>> getAllDepartureAreas() throws GeneralException {
         List<String> departureAreas = tripsService.getAllDepartureAreas();
         return new ResponseEntity<>(departureAreas, HttpStatus.OK);
     }
 
+    // Delete a trip
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTrip(@PathVariable Long id) throws GeneralException {
         tripsService.deleteTrip(id);
         return ResponseEntity.noContent().build();
     }
 
+    // Get the reservations of a trip
     @GetMapping("/{trip_id}/reservations")
     public ResponseEntity<TripReservationsResponse> getTripReservations(@PathVariable(name = "trip_id") Long trip_id) throws GeneralException {
         TripReservationsResponse responseBody = tripsService.getTripReservations(trip_id);

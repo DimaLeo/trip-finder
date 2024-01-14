@@ -1,5 +1,7 @@
 package com.nik.tripfinder.services;
 
+import com.nik.tripfinder.DTO.AgencyDTO.AgencyDTO;
+import com.nik.tripfinder.DTO.AgencyDTO.AgencyDTOMapper;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTO;
 import com.nik.tripfinder.DTO.AgencyDTO.MinimalAgencyDTOMapper;
 import com.nik.tripfinder.DTO.TripDTO.TripDTO;
@@ -19,12 +21,14 @@ public class AgenciesService {
     private final AgenciesRepository agenciesRepository;
     private final MinimalAgencyDTOMapper minimalAgencyDTOMapper;
     private final TripDTOMapper tripDTOMapper;
+    private final AgencyDTOMapper agencyDTOMapper;
 
     public AgenciesService(AgenciesRepository agenciesRepository, MinimalAgencyDTOMapper minimalAgencyDTOMapper,
-                           TripDTOMapper tripDTOMapper) {
+                           TripDTOMapper tripDTOMapper, AgencyDTOMapper agencyDTOMapper) {
         this.agenciesRepository = agenciesRepository;
         this.minimalAgencyDTOMapper = minimalAgencyDTOMapper;
         this.tripDTOMapper = tripDTOMapper;
+        this.agencyDTOMapper = agencyDTOMapper;
     }
 
     public List<MinimalAgencyDTO> getAllAgencies() throws Exception {
@@ -49,6 +53,19 @@ public class AgenciesService {
                 return tripDTOMapper.mapToDTOList(dbAgency.getTrips());
             } else {
                 throw new Exception();
+            }
+        } catch (Exception e) {
+            throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public AgencyDTO getAgencyDetails(Integer id) throws GeneralException {
+        try {
+            Optional<Agency> agency = agenciesRepository.findById(id);
+            if (agency.isPresent()) {
+                return agencyDTOMapper.apply(agency.get());
+            } else {
+                throw new GeneralException("There is no agency with id " + id, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
             throw new GeneralException("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);

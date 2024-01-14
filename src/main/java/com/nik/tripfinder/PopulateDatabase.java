@@ -43,34 +43,14 @@ public class PopulateDatabase implements CommandLineRunner {
                 u3 = userRepository.save(u3);
                 u4 = userRepository.save(u4);
 
-                Customer c1 = new Customer(
-                                u1,
-                                "123456781",
-                                "Dimitris",
-                                "Leonidis",
-                                "dim@leon.gr");
-
-                Customer c2 = new Customer(
-                                u2,
-                                "123456782",
-                                "Dimitris",
-                                "Leonidis",
-                                "dim1@leon.gr");
+                Customer c1 = new Customer(u1, "123456781", "Dimitris", "Leonidis", "dim@leon.gr");
+                Customer c2 = new Customer( u2, "123456782", "Dimitris", "Leonidis", "dim1@leon.gr");
 
                 customersRepository.save(c1);
                 customersRepository.save(c2);
 
-                Agency a1 = new Agency(
-                                u3,
-                                "123456783",
-                                "agency1",
-                                "Dima");
-
-                Agency a2 = new Agency(
-                                u4,
-                                "123456784",
-                                "agency2",
-                                "Leon");
+                Agency a1 = new Agency(u3, "123456783", "agency1", "Dima");
+                Agency a2 = new Agency(u4, "123456784", "agency2", "Leon");
 
                 agenciesRepository.save(a1);
                 agenciesRepository.save(a2);
@@ -82,6 +62,7 @@ public class PopulateDatabase implements CommandLineRunner {
                                 "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 50, a2);
                 Trip t3 = new Trip(1705795200000l,1705708800000l,  "Kavala", "Drama, Exochi, Falakro",
                                 "<h1>test</h1><h2>test</h2><h3>test</h3><p><em>test</em></p>", 32, a1);
+
                 tripsRepository.save(t1);
                 tripsRepository.save(t2);
                 tripsRepository.save(t3);
@@ -99,7 +80,6 @@ public class PopulateDatabase implements CommandLineRunner {
                 reservationRepository.save(r4);
                 // reservationRepository.save(r5);
                 // reservationRepository.save(r6);
-
         }
 
 }

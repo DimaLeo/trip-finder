@@ -11,11 +11,8 @@ import com.nik.tripfinder.models.Trip;
 import com.nik.tripfinder.payloads.requests.NewTripRequest;
 import com.nik.tripfinder.payloads.responses.TripReservationsResponse;
 import com.nik.tripfinder.repositories.AgenciesRepository;
-import com.nik.tripfinder.repositories.ReservationRepository;
 import com.nik.tripfinder.repositories.TripsRepository;
 import com.nik.tripfinder.util.Timestamp;
-
-import jakarta.persistence.EntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,22 +83,21 @@ public class TripsService {
             Integer customerId) throws GeneralException {
 
         try {
-            List<Trip> trips =
-                    tripsRepository
-                            .findTripsWithOptionalParameters(
-                                    startDate,
-                                    endDate,
-                                    destination,
-                                    departureArea,
-                                    agencyId);
+            // Get the trips with the given filters (all are optional) 
+            // It does not return trips with start date before today
+            List<Trip> trips = tripsRepository.findTripsWithOptionalParameters(
+                                    startDate, endDate,
+                                    destination, departureArea,
+                                    agencyId, Timestamp.todaysTimestamp());
 
-            trips.forEach(trip -> trip.setHasReservation(
+            
+            if (customerId != null) {
+                // Add a field to each trip indicating if the given user has a reservation for it
+                trips.forEach(trip -> trip.setHasReservation(
                     trip.getReservations().stream().anyMatch(
-                            reservation ->
-                                    reservation.
-                                            getCustomer().
-                                            getCustomerId().equals(customerId))
-            ));
+                            reservation -> reservation.getCustomer().getCustomerId().equals(customerId))
+                ));
+            }
 
             return tripDTOMapper.mapToDTOList(trips);
         } catch (Exception e) {
