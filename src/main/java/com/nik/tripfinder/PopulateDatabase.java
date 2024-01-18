@@ -52,14 +52,14 @@ public class PopulateDatabase implements CommandLineRunner {
                 u3 = userRepository.save(u3);
                 u4 = userRepository.save(u4);
 
-                Customer c1 = new Customer(u1, "123456781", "Dimitris", "Leonidis", "dim@leon.gr");
-                Customer c2 = new Customer( u2, "123456782", "Dimitris", "Leonidis", "dim1@leon.gr");
+                Customer c1 = new Customer(u1, "123456781", "Kostas", "Papadopoulos", "kostaspap@gmail.gr");
+                Customer c2 = new Customer( u2, "123456782", "George", "Nikolaidis", "georgenik@gmail.gr");
 
                 customersRepository.save(c1);
                 customersRepository.save(c2);
 
-                Agency a1 = new Agency(u3, "123456783", "agency1", "Dima");
-                Agency a2 = new Agency(u4, "123456784", "agency2", "Leon");
+                Agency a1 = new Agency(u3, "123456783", "TripGoers", "Ioannis Konstantinidis");
+                Agency a2 = new Agency(u4, "123456784", "24/7 Travel", "Dimitris Arvanitis");
 
                 agenciesRepository.save(a1);
                 agenciesRepository.save(a2);
