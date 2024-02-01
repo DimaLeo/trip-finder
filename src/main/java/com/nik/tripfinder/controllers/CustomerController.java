@@ -35,4 +35,9 @@ public class CustomerController {
         return customersService.getReservations(customerId);
     }
 
+    @GetMapping("/{id}/remaining-reservations")
+    public ResponseEntity<Integer> getRemainingReservations(@PathVariable(name = "id") Integer customerId) throws GeneralException {
+        return new ResponseEntity<>(customersService.getReservations(customerId).size(), HttpStatus.OK);
+    }
+
 }

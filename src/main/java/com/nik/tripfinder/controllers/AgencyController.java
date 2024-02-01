@@ -40,6 +40,16 @@ public class AgencyController {
 
     }
 
+
+    @GetMapping(path = "/{id}/remaining-trips")
+    public ResponseEntity<Integer> getRemainingTrips(@PathVariable(name = "id") Integer id) throws GeneralException {
+
+        List<TripDTO> trips = agenciesService.getAgencyTrips(id);
+
+        return new ResponseEntity<>(trips.size(), HttpStatus.OK);
+
+    }
+
     // /api/agencies
     // GET /: get all the agencies
     // GET /{agencyId}/trips: get all trips of an agency
